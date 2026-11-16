@@ -26,6 +26,10 @@ SHADOW_DATABASE_URL="postgres://postgres:postgres@localhost:51215/template1?sslm
 
 Then create your first staff account with `npm run admin:create`.
 
+## Deploying
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full Supabase + Vercel guide, environment variables and launch checklist.
+
 ## Connecting to Supabase
 
 1. Create a Supabase project and open **Project Settings → Database → Connection string**.
@@ -51,6 +55,7 @@ are ever pulled into browser code.
 | `npm run db:deploy` | Apply migrations in production |
 | `npm run db:studio` | Browse the database |
 | `npm run admin:create` | Create a staff account / reset a password |
+| `npm run db:cleanup` | Remove expired sessions and old rate-limit records |
 
 ## Project structure
 
@@ -109,6 +114,16 @@ Verified information is entered by AIDA staff in the admin area; nothing is hard
 Public pages read published content through cached functions (`src/features/content/queries.ts`) tagged per
 content type; every admin change calls `updateTag`, so the next page regeneration shows it. Note that the
 **production build needs database access** (`DATABASE_URL`) because public pages are prerendered from published content.
+
+## Security and operations
+
+- Security headers on every response: Content Security Policy (same-origin only), HSTS (production),
+  X-Frame-Options DENY, nosniff, strict referrer and permissions policies; admin pages are `no-store`.
+- `GET /api/health` checks the database (for uptime monitors).
+- `GET /api/cron/cleanup` runs daily housekeeping when called with `Authorization: Bearer $CRON_SECRET`
+  (configured in `vercel.json`).
+- Search engines are blocked (`robots.txt` and meta tags) unless `ALLOW_SEARCH_INDEXING=true`.
+- `/sitemap.xml` lists public pages and published programmes; a branded social-sharing image is generated.
 
 ## Register Interest — protections
 

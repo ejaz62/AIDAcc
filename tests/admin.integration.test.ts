@@ -32,7 +32,7 @@ describe.skipIf(!url)("admin area (PostgreSQL)", () => {
   const auditIds: string[] = [];
 
   beforeAll(async () => {
-    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url! }) });
+    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined }) });
     auth = createAuth(db, { secret: randomBytes(32).toString("hex"), baseURL: "http://localhost:3000", nextCookies: false });
     const user = await createAdminUser(auth, db, { name: "IT Admin", email: `admin${domain}`, password });
     actor = { id: user.id, name: user.name, email: user.email, role: "admin" };

@@ -30,7 +30,7 @@ async function StaffList() {
                   <StatusBadge status={s.disabled ? "ARCHIVED" : "CONTACTED"} label={s.disabled ? "Disabled" : "Active"} />
                 </p>
                 <p className="truncate text-sm text-ink-500">{s.email}</p>
-                <p className="mt-0.5 text-xs text-ink-400">
+                <p className="mt-0.5 text-xs text-ink-500">
                   Added {formatDateTime(s.createdAt)}
                   {s.sessions[0] && ` · last active ${formatDateTime(s.sessions[0].updatedAt)}`}
                 </p>

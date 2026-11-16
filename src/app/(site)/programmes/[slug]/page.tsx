@@ -39,7 +39,7 @@ async function ProgrammeDetail({ params }: Props) {
                 <div key={f.key}>
                   <dt className="text-xl font-bold text-ink-950">{f.label}</dt>
                   <dd className="mt-3 leading-relaxed whitespace-pre-line text-ink-700">
-                    {value ?? <span className="text-ink-400 italic">To be confirmed.</span>}
+                    {value ?? <span className="text-ink-500 italic">To be confirmed.</span>}
                   </dd>
                 </div>
               );

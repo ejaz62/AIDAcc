@@ -19,7 +19,7 @@ describe.skipIf(!url)("Prisma interest repository (PostgreSQL)", () => {
   let db: PrismaClient;
 
   beforeAll(() => {
-    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url! }) });
+    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined }) });
   });
 
   afterAll(async () => {

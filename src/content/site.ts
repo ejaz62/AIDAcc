@@ -13,8 +13,6 @@ export const site = {
   fullName: "Artificial Intelligence Digital Academy",
   description:
     "AIDA — the Artificial Intelligence Digital Academy. Register your interest to hear when programme information is published.",
-  /** Asks search engines not to index the site. Set to false at public launch. */
-  blockSearchEngines: true,
 } as const;
 
 export const navigation = [

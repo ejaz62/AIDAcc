@@ -80,7 +80,7 @@ export async function Programmes() {
                       className="flex items-center justify-between gap-4 rounded-(--radius-control) bg-ink-50 px-4 py-3 ring-1 ring-ink-200/70 ring-inset"
                     >
                       <dt className="text-sm font-semibold text-ink-800">{field}</dt>
-                      <dd className="text-xs font-medium text-ink-400">To be confirmed</dd>
+                      <dd className="text-xs font-medium text-ink-500">To be confirmed</dd>
                     </div>
                   ))}
                 </dl>

@@ -21,7 +21,7 @@ export function DailyChart({ data }: { data: Array<{ date: string; count: number
       <div className="relative">
         <div className="flex h-44 gap-2">
           {/* y-axis */}
-          <div className="relative w-6 shrink-0 text-right text-[0.7rem] text-ink-400" aria-hidden>
+          <div className="relative w-6 shrink-0 text-right text-[0.7rem] text-ink-500" aria-hidden>
             {ticks.map((t) => (
               <span key={t} className="absolute right-0 translate-y-1/2" style={{ bottom: `${(t / max) * 100}%` }}>
                 {t}
@@ -66,7 +66,7 @@ export function DailyChart({ data }: { data: Array<{ date: string; count: number
             <span className="font-semibold">{current.count}</span> on {fmt(current.date)}
           </div>
         )}
-        <div className="mt-2 flex justify-between pl-8 text-[0.7rem] text-ink-400" aria-hidden>
+        <div className="mt-2 flex justify-between pl-8 text-[0.7rem] text-ink-500" aria-hidden>
           <span>{fmt(data[0].date)}</span>
           <span>{fmt(data[data.length - 1].date)}</span>
         </div>

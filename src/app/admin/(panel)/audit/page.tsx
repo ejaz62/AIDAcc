@@ -53,7 +53,7 @@ async function Entries({ searchParams }: { searchParams: SearchParams }) {
                 {isProgramme && e.targetId && (
                   <>
                     {" "}
-                    <Link href={`/admin/programmes/${e.targetId}`} className="text-brand-700 hover:underline">
+                    <Link href={`/admin/programmes/${e.targetId}`} className="text-brand-700 underline underline-offset-2">
                       view
                     </Link>
                   </>
@@ -61,7 +61,7 @@ async function Entries({ searchParams }: { searchParams: SearchParams }) {
                 {isRegistration && e.targetId && (
                   <>
                     {" "}
-                    <Link href={`/admin/registrations/${e.targetId}`} className="text-brand-700 hover:underline">
+                    <Link href={`/admin/registrations/${e.targetId}`} className="text-brand-700 underline underline-offset-2">
                       view
                     </Link>
                   </>

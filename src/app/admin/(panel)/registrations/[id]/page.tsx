@@ -53,11 +53,11 @@ async function RegistrationDetail({ params }: { params: Promise<{ id: string }> 
                     {r.programme.title}
                   </Link>
                 ) : (
-                  <span className="text-ink-400">None selected</span>
+                  <span className="text-ink-500">None selected</span>
                 )}
               </Detail>
               <Detail label="Message">
-                {r.message ? <span className="whitespace-pre-wrap">{r.message}</span> : <span className="text-ink-400">None</span>}
+                {r.message ? <span className="whitespace-pre-wrap">{r.message}</span> : <span className="text-ink-500">None</span>}
               </Detail>
               <Detail label="First registered">{formatDateTime(r.createdAt)}</Detail>
               <Detail label="Last submitted">

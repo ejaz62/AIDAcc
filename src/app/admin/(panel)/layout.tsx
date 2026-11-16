@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Mobile top bar */}
       <header className="relative flex h-16 items-center justify-between bg-ink-950 px-4 lg:hidden">
-        <Link href="/admin" className="rounded-md" aria-label="Admin dashboard">
+        <Link href="/admin" className="rounded-md" aria-label="AIDA admin dashboard">
           <Logo inverse />
         </Link>
         <div className="flex items-center gap-1">
