@@ -1,0 +1,224 @@
+// AIDA database schema (PostgreSQL — Supabase in production).
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// How the person describes themselves. Describes the registrant, not AIDA's offering.
+enum LearnerType {
+  STUDENT
+  PROFESSIONAL
+  EDUCATOR
+  ORGANISATION
+  OTHER
+}
+
+enum RegistrationStatus {
+  NEW
+  CONTACTED
+  ARCHIVED
+}
+
+/// A registration of interest. This is NOT an application for admission.
+/// One row per e-mail address; repeat submissions increment `submissionCount`.
+model InterestRegistration {
+  id              String             @id @default(cuid())
+  fullName        String             @db.VarChar(120)
+  /// Normalised (trimmed, lower-case) — unique to prevent duplicate registrations.
+  email           String             @unique @db.VarChar(254)
+  learnerType     LearnerType
+  message         String?            @db.VarChar(1000)
+  consentAt       DateTime
+  status          RegistrationStatus @default(NEW)
+  submissionCount Int                @default(1)
+  lastSubmittedAt DateTime           @default(now())
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  notes           RegistrationNote[]
+  /// Optional published programme the person is interested in.
+  programmeId     String?
+  programme       Programme?         @relation(fields: [programmeId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([programmeId])
+  @@map("interest_registrations")
+}
+
+/// Audit of form submissions, used for rate limiting and idempotency.
+/// Stores only a salted hash of the IP address, never the raw IP.
+model SubmissionAttempt {
+  id        String   @id @default(cuid())
+  /// Unique per rendered form instance — replays of the same submission are ignored.
+  formToken String   @unique @db.VarChar(64)
+  ipHash    String   @db.Char(64)
+  outcome   String   @db.VarChar(20)
+  createdAt DateTime @default(now())
+
+  @@index([ipHash, createdAt])
+  @@map("submission_attempts")
+}
+
+/// Free-text staff notes on a registration. Deleted with the registration.
+model RegistrationNote {
+  id             String               @id @default(cuid())
+  registrationId String
+  registration   InterestRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  authorId       String?
+  author         User?                @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  body           String               @db.VarChar(2000)
+  createdAt      DateTime             @default(now())
+
+  @@index([registrationId, createdAt])
+  @@map("registration_notes")
+}
+
+/// Append-only record of staff actions. Never stores registrants' personal data.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String   @db.VarChar(254)
+  action     String   @db.VarChar(60)
+  targetType String?  @db.VarChar(40)
+  targetId   String?  @db.VarChar(40)
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetType, targetId])
+  @@map("audit_logs")
+}
+
+/// Sign-in attempts, used to throttle password guessing. Stores hashed IPs only.
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String   @db.VarChar(254)
+  ipHash    String   @db.Char(64)
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([ipHash, createdAt])
+  @@map("login_attempts")
+}
+
+// ---------------------------------------------------------------------------
+// Authentication (Better Auth core schema + AIDA fields)
+// ---------------------------------------------------------------------------
+
+/// A staff member who can sign in to the admin area. There is no public sign-up.
+model User {
+  id            String             @id
+  name          String
+  email         String             @unique
+  emailVerified Boolean            @default(false)
+  image         String?
+  /// "admin" — the only role for now.
+  role          String             @default("admin")
+  /// Disabled accounts cannot sign in or use existing sessions.
+  disabled      Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  notes         RegistrationNote[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  /// Password hash (scrypt) for email/password accounts.
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+// ---------------------------------------------------------------------------
+// Content managed by staff in the admin area
+// ---------------------------------------------------------------------------
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+/// A programme entered by AIDA staff. Only PUBLISHED programmes appear on the public site.
+model Programme {
+  id                String                 @id @default(cuid())
+  slug              String                 @unique @db.VarChar(80)
+  title             String                 @db.VarChar(150)
+  summary           String?                @db.VarChar(300)
+  overview          String?                @db.Text
+  audience          String?                @db.Text
+  duration          String?                @db.VarChar(200)
+  studyFormat       String?                @db.VarChar(200)
+  entryRequirements String?                @db.Text
+  fees              String?                @db.Text
+  status            ContentStatus          @default(DRAFT)
+  sortOrder         Int                    @default(0)
+  publishedAt       DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  registrations     InterestRegistration[]
+
+  @@index([status, sortOrder])
+  @@map("programmes")
+}
+
+/// Site-wide details (contact, about sections, preview notice). Staff edit the draft;
+/// only the published copy is shown on the public site.
+model SiteContent {
+  key         String    @id @db.VarChar(40)
+  draft       Json
+  published   Json?
+  publishedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@map("site_content")
+}

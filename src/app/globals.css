@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/*
+ * AIDA design system — core tokens.
+ * Every colour, font, radius and shadow used in the UI is defined here so
+ * the visual language stays consistent and can be changed in one place.
+ */
+@theme {
+  /* Typography */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand — deep electric indigo */
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #e1e8ff;
+  --color-brand-200: #c4d1ff;
+  --color-brand-300: #9db1ff;
+  --color-brand-400: #7086ff;
+  --color-brand-500: #4c5efa;
+  --color-brand-600: #3a43ee;
+  --color-brand-700: #2f33d2;
+  --color-brand-800: #292da9;
+  --color-brand-900: #282e85;
+  --color-brand-950: #181a4d;
+
+  /* Accent — signal cyan */
+  --color-accent-100: #cffafe;
+  --color-accent-200: #a5f3fc;
+  --color-accent-300: #67e8f9;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+  --color-accent-600: #0891b2;
+  --color-accent-700: #0e7490;
+
+  /* Ink — cool neutrals */
+  --color-ink-50: #f7f8fb;
+  --color-ink-100: #eef0f6;
+  --color-ink-200: #dde1ec;
+  --color-ink-300: #c2c8d8;
+  --color-ink-400: #8e96ae;
+  --color-ink-500: #646c86;
+  --color-ink-600: #4a5169;
+  --color-ink-700: #363c52;
+  --color-ink-800: #23283a;
+  --color-ink-900: #151927;
+  --color-ink-950: #0b0e19;
+
+  /* Status */
+  --color-warning-50: #fffbeb;
+  --color-warning-200: #fde68a;
+  --color-warning-700: #b45309;
+  --color-warning-900: #78350f;
+
+  /* Semantic aliases */
+  --color-background: var(--color-ink-50);
+  --color-surface: #ffffff;
+  --color-foreground: var(--color-ink-900);
+  --color-muted: var(--color-ink-500);
+  --color-border: var(--color-ink-200);
+  --color-ring: var(--color-brand-500);
+
+  /* Shape & depth */
+  --radius-card: 1.25rem;
+  --radius-control: 0.75rem;
+  --shadow-card: 0 1px 2px rgb(11 14 25 / 0.04), 0 8px 24px -12px rgb(11 14 25 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(11 14 25 / 0.04), 0 18px 40px -16px rgb(40 46 133 / 0.28);
+  --shadow-glow: 0 0 0 1px rgb(76 94 250 / 0.25), 0 12px 40px -8px rgb(76 94 250 / 0.55);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(100deg, var(--color-brand-300), var(--color-accent-300));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes pulse-node {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
