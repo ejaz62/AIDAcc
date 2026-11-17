@@ -123,6 +123,15 @@ export const showcase = [
     body: "10-day programme with monthly batches. Recordings are provided for revision.",
   },
   {
+    key: "workspace",
+    label: "Learning Space",
+    src: "/images/learning-workspace.webp",
+    alt: "Students learning to build with AI on laptops at shared tables",
+    eyebrow: "Practical learning",
+    title: "Learn by building real AI projects",
+    body: "Hands-on exercises with AI coding tools — you keep your project files and source code.",
+  },
+  {
     key: "agents",
     label: "AI Agents",
     src: "/images/ai-agents.webp",

@@ -233,17 +233,19 @@ export function AssistantWidget() {
             </div>
           </header>
 
+          <div className="scale-original shrink-0 border-b border-white/10 bg-ink-950">
+            <Image
+              src={ASSISTANT_IMAGE}
+              alt="Ask AIDA, the academy's virtual assistant"
+              width={447}
+              height={420}
+              unoptimized
+              priority
+              className="mx-auto h-40 w-auto sm:h-48"
+            />
+          </div>
+
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-ink-50 p-4" aria-live="polite">
-            <figure className="overflow-hidden rounded-2xl ring-1 ring-border">
-              <Image
-                src={ASSISTANT_IMAGE}
-                alt="Ask AIDA, the academy's virtual assistant"
-                width={447}
-                height={420}
-                unoptimized
-                className="h-auto w-full"
-              />
-            </figure>
             {messages.map((m, i) => (
               <div key={i} className={cn("flex items-end gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
                 <p

@@ -25,7 +25,7 @@ export function HeroShowcase() {
         ))}
         <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/40 to-transparent" />
 
-        <div role="tablist" aria-label="Photos" className="absolute top-4 right-4 flex gap-1 rounded-full bg-ink-950/70 p-1 ring-1 ring-white/15 backdrop-blur">
+        <div role="tablist" aria-label="Photos" className="absolute top-3 right-3 left-3 flex flex-wrap justify-center gap-1 rounded-2xl bg-ink-950/70 p-1 ring-1 ring-white/15 backdrop-blur sm:top-4 sm:right-4 sm:left-auto sm:rounded-full">
           {showcase.map((s, i) => (
             <button
               key={s.key}
