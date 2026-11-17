@@ -38,6 +38,8 @@ code, chat or documents.
 
 ## 2. Code on GitHub
 
+> **Status (17 Nov 2026):** done — private repository `ejaz62/AIDAcc`, branch `main`.
+
 1. **You:** create an empty **private** repository on GitHub (no README or licence).
 2. Push this project to it:
    ```bash
@@ -46,6 +48,9 @@ code, chat or documents.
    ```
 
 ## 3. Vercel hosting
+
+> **Status (17 Nov 2026):** project `aid-acc` (https://aid-acc.vercel.app) created and its environment
+> variables added (generated into the git-ignored `.env.vercel.local`, with production-only secrets).
 
 1. **You:** sign in at <https://vercel.com> with GitHub, choose **Add New → Project** and import the repository.
    The framework is detected as Next.js automatically. Leave the build settings as they are: Vercel runs
