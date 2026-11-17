@@ -13,7 +13,7 @@ export const STARTER_FAQ = [
   {
     question: "How do I register my interest?",
     answer:
-      "Use the form at /register-interest. Enter your name, email address and which description fits you best, and optionally a programme and a message. You will receive a confirmation email, and AIDA will contact you when there is news to share.",
+      "Use the form at /register-interest. Enter your name, email address and which description fits you best, and optionally a programme and a message. AIDA will contact you by email when there is news to share.",
   },
   {
     question: "Is registering interest the same as applying for admission?",
