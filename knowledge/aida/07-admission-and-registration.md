@@ -4,6 +4,8 @@ title: Admission and Registration
 order: 7
 page: /fees-admission
 summary: No coding or technical background is needed. To join, contact AIDA Reception (+92 322 720 4898), choose a batch and pay the course fee; your place is confirmed once AIDA verifies the payment. A laptop is required.
+summary_roman: Coding ya technical background ki zaroorat nahi. Join karne ke liye AIDA Reception (+92 322 720 4898) se rabta karein, batch chunein aur fee ada karein; AIDA payment verify karne ke baad aap ki seat confirm karta hai. Laptop zaroori hai.
+summary_urdu: کوڈنگ یا تکنیکی پس منظر کی ضرورت نہیں۔ داخلے کے لیے AIDA ریسپشن (+92 322 720 4898) سے رابطہ کریں، بیچ منتخب کریں اور فیس ادا کریں؛ AIDA ادائیگی کی تصدیق کے بعد آپ کی نشست کنفرم کرتی ہے۔ لیپ ٹاپ ضروری ہے۔
 ---
 ## Who can join
 

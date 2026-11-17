@@ -12,7 +12,7 @@ export function KnowledgeEditor({
   initial,
 }: {
   sectionKey: string;
-  initial: { title: string; summary: string; body: string };
+  initial: { title: string; summary: string; summaryRoman: string; summaryUrdu: string; body: string };
 }) {
   const [state, action, pending] = useActionState<KnowledgeFormState, FormData>(saveKnowledge.bind(null, sectionKey), {});
   const v = state.values ?? { ...initial, note: "" };
@@ -42,6 +42,34 @@ export function KnowledgeEditor({
           className={cn(inputClasses(), "resize-y")}
         />
       </Field>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Field id="kb-summary-roman" label="Short answer in Roman Urdu" hint="Used when the visitor writes in Roman Urdu. Leave empty to use English.">
+          <textarea
+            id="kb-summary-roman"
+            name="summaryRoman"
+            rows={4}
+            maxLength={1500}
+            defaultValue={v.summaryRoman}
+            key={`sr-${k}`}
+            aria-describedby="kb-summary-roman-hint"
+            className={cn(inputClasses(), "resize-y")}
+          />
+        </Field>
+        <Field id="kb-summary-urdu" label="Short answer in Urdu (اردو)" hint="Used when the visitor writes in Urdu. Leave empty to use English.">
+          <textarea
+            id="kb-summary-urdu"
+            name="summaryUrdu"
+            rows={4}
+            maxLength={1500}
+            dir="rtl"
+            lang="ur"
+            defaultValue={v.summaryUrdu}
+            key={`su-${k}`}
+            aria-describedby="kb-summary-urdu-hint"
+            className={cn(inputClasses(), "resize-y")}
+          />
+        </Field>
+      </div>
       <Field
         id="kb-body"
         label="Full content"

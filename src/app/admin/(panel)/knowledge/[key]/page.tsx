@@ -27,7 +27,7 @@ async function Editor({ params }: { params: Promise<{ key: string }> }) {
       </div>
       <div className="grid gap-6 xl:grid-cols-3">
         <Panel className="xl:col-span-2">
-          <KnowledgeEditor key={s.updatedAt.toISOString()} sectionKey={s.key} initial={{ title: s.title, summary: s.summary, body: s.body }} />
+          <KnowledgeEditor key={s.updatedAt.toISOString()} sectionKey={s.key} initial={{ title: s.title, summary: s.summary, summaryRoman: s.summaryRoman ?? "", summaryUrdu: s.summaryUrdu ?? "", body: s.body }} />
         </Panel>
         <Panel title="Version history">
           <ol className="space-y-4">

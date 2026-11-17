@@ -19,6 +19,9 @@ export interface KnowledgeSnippet {
   key: string;
   title: string;
   summary: string;
+  /** Short answer in Roman Urdu / Urdu; English is used when empty. */
+  summaryRoman?: string | null;
+  summaryUrdu?: string | null;
   page: string;
 }
 
@@ -219,28 +222,73 @@ export function matchFaq(question: string, faq: PublicFaq[], minCoverage = 0): P
 // Answer
 // ---------------------------------------------------------------------------
 
-export function unavailableReply(sections: KnowledgeSnippet[]): string {
-  const contact = sections.find((s) => s.key === "contact");
-  return contact
-    ? `I couldn't find that in AIDA's published information. Please contact AIDA Reception for help. ${contact.summary}`
-    : "I couldn't find that in AIDA's published information. Please contact AIDA Reception via the Contact page (/contact).";
+export type ReplyLanguage = "en" | "roman" | "urdu";
+
+/** Words that mark a message as Roman Urdu (Urdu written in English letters). */
+const ROMAN_URDU_MARKERS = new Set(
+  "kya kia hai hain hy hn hoti hota hote kab kaise kese kaisay kitni kitna kitne milega milegi milenge milta milti sakta sakte sakti chahiye chahye karna karein krna karen mujhe muje mujhy aap ap apko apka wapas wapis paise pese paisay kaun kon kahan kidhar nahi nhi batain bataen batayen batao bataye ka ki ke ko se mein hum kaun koi jayega jaye lein lena dena".split(" "),
+);
+
+/** The language to answer in: Urdu script, Roman Urdu or English. */
+export function detectLanguage(message: string): ReplyLanguage {
+  if (/[؀-ۿ]/.test(message)) return "urdu";
+  const words = normalise(message).split(" ");
+  return words.some((w) => ROMAN_URDU_MARKERS.has(w)) ? "roman" : "en";
 }
 
-const withLink = (s: KnowledgeSnippet) => (s.page ? `${s.summary}\n\nMore details: ${s.page}` : s.summary);
+const LABELS: Record<ReplyLanguage, { more: string; and: string; unavailable: string }> = {
+  en: {
+    more: "More details:",
+    and: " and ",
+    unavailable: "I couldn't find that in AIDA's published information. Please contact AIDA Reception for help.",
+  },
+  roman: {
+    more: "Mazeed maloomat:",
+    and: " aur ",
+    unavailable: "Maazrat, yeh maloomat AIDA ki shaya shuda maloomat mein nahi mili. Madad ke liye AIDA Reception se rabta karein.",
+  },
+  urdu: {
+    more: "مزید معلومات:",
+    and: " اور ",
+    unavailable: "معذرت، یہ معلومات AIDA کی شائع شدہ معلومات میں نہیں ملی۔ مدد کے لیے AIDA ریسپشن سے رابطہ کریں۔",
+  },
+};
+
+/** A section's short answer in the visitor's language (English when no translation exists). */
+function summaryIn(s: KnowledgeSnippet, lang: ReplyLanguage): string {
+  if (lang === "roman" && s.summaryRoman) return s.summaryRoman;
+  if (lang === "urdu" && s.summaryUrdu) return s.summaryUrdu;
+  return s.summary;
+}
+
+export function unavailableReply(sections: KnowledgeSnippet[], lang: ReplyLanguage = "en"): string {
+  const contact = sections.find((s) => s.key === "contact");
+  const { unavailable } = LABELS[lang];
+  return contact ? `${unavailable} ${summaryIn(contact, lang)}` : `${unavailable} (/contact)`;
+}
 
 export function offlineReply(message: string, { faq, sections }: AnswerSources): string {
   if (isGreeting(message)) return WELCOME;
 
+  const lang = detectLanguage(message);
+  const L = LABELS[lang];
   const byKey = new Map(sections.map((s) => [s.key, s]));
   const ranked = rankIntents(message).filter((r) => byKey.has(r.section));
+  const more = (pages: string[]) => {
+    const unique = [...new Set(pages.filter(Boolean))];
+    return unique.length ? `
+
+${L.more} ${unique.join(L.and)}` : "";
+  };
 
   // A specific FAQ answer beats a general section summary when it matches the whole
-  // question and is about the same topic the visitor asked about.
-  const faqHit = matchFaq(message, faq, ranked.length ? 0.6 : 0);
+  // question and is about the same topic. FAQ answers are written in English, so for
+  // Urdu / Roman Urdu questions the translated section answer is preferred.
+  const faqHit = lang === "en" || !ranked.length ? matchFaq(message, faq, ranked.length ? 0.6 : 0) : null;
   const faqTopic = faqHit && rankIntents(`${faqHit.question} ${faqHit.answer}`).map((r) => r.section);
   if (faqHit && (!ranked[0] || ranked.some((r) => faqTopic!.includes(r.section)))) {
     const top = ranked[0] && byKey.get(ranked[0].section);
-    return top?.page ? `${faqHit.answer}\n\nMore details: ${top.page}` : faqHit.answer;
+    return `${faqHit.answer}${more([top?.page ?? ""])}`;
   }
 
   if (ranked.length) {
@@ -248,11 +296,12 @@ export function offlineReply(message: string, { faq, sections }: AnswerSources):
     // Combine a second topic when the visitor clearly asked about two things (e.g. fees and timing).
     const second = ranked[1] && ranked[1].score >= 1 && ranked[1].score >= ranked[0].score * 0.6 ? byKey.get(ranked[1].section) : null;
     if (second && second.key !== first.key) {
-      const pages = [...new Set([first.page, second.page].filter(Boolean))].join(" and ");
-      return `${first.summary}\n\n${second.summary}${pages ? `\n\nMore details: ${pages}` : ""}`;
+      return `${summaryIn(first, lang)}
+
+${summaryIn(second, lang)}${more([first.page, second.page])}`;
     }
-    return withLink(first);
+    return `${summaryIn(first, lang)}${more([first.page])}`;
   }
 
-  return unavailableReply(sections);
+  return unavailableReply(sections, lang);
 }

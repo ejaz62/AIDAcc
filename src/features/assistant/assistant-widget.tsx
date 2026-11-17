@@ -232,6 +232,7 @@ export function AssistantWidget() {
               <div key={i} className={cn("flex items-end gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "assistant" && <Avatar size={28} />}
                 <p
+                  dir="auto"
                   className={cn(
                     "max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line shadow-sm",
                     m.role === "user"

@@ -43,6 +43,16 @@ describe.skipIf(!url)("knowledge base (PostgreSQL)", () => {
     expect((await db.knowledgeSection.findUnique({ where: { key } }))?.summary).toBe("Staff edit.");
   });
 
+  it("fills empty translations from the files but never replaces existing ones", async () => {
+    await seedSectionsFromFiles(db, [{ ...file, summaryRoman: "Roman v1" }]);
+    expect((await db.knowledgeSection.findUnique({ where: { key } }))?.summaryRoman).toBe("Roman v1");
+    await seedSectionsFromFiles(db, [{ ...file, summaryRoman: "Roman v2", summaryUrdu: "اردو" }]);
+    const s = await db.knowledgeSection.findUnique({ where: { key } });
+    expect(s?.summaryRoman).toBe("Roman v1");
+    expect(s?.summaryUrdu).toBe("اردو");
+    expect(s?.summary).toBe("Staff edit.");
+  });
+
   it("saves a new version, keeps history and restores an earlier version", async () => {
     const input = sectionInputSchema.parse({ title: "Test section", summary: "Updated short answer.", body: "Updated body.", note: "Fee update" });
     expect(await saveSection(db, actor, key, input)).toBe(true);

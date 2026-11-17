@@ -4,6 +4,8 @@ title: AI Training Programme
 order: 3
 page: /programme
 summary: AIDA offers one programme, the AIDA AI Training Programme: a 10-day, live, instructor-led online course for complete beginners (no coding needed). You learn Claude and AI tools, AI website development, AI agents and automation, and how to publish websites online.
+summary_roman: AIDA ka ek programme hai — AIDA AI Training Programme: 10 din ka live, instructor-led online course, bilkul beginners ke liye (coding ki zaroorat nahi). Aap Claude aur AI tools, AI se website banana, AI agents aur automation, aur websites online publish karna seekhte hain.
+summary_urdu: AIDA کا ایک پروگرام ہے — AIDA AI Training Programme: 10 دن کا لائیو، انسٹرکٹر کی زیرِ نگرانی آن لائن کورس، بالکل ابتدائی افراد کے لیے (کوڈنگ کی ضرورت نہیں)۔ آپ Claude اور AI ٹولز، AI کے ذریعے ویب سائٹ بنانا، AI ایجنٹس اور آٹومیشن، اور ویب سائٹس آن لائن شائع کرنا سیکھتے ہیں۔
 ---
 AIDA currently offers **one confirmed programme: the AIDA AI Training Programme.** The subjects listed under Curriculum are learning areas within this programme, not separate courses.
 

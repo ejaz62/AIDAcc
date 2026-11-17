@@ -8,6 +8,9 @@ export interface KnowledgeFileSection {
   key: string;
   title: string;
   summary: string;
+  /** Short answer in Roman Urdu / Urdu (optional). */
+  summaryRoman?: string;
+  summaryUrdu?: string;
   body: string;
   order: number;
   page: string;
@@ -23,7 +26,7 @@ export function parseKnowledgeFile(text: string): KnowledgeFileSection {
     if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
   }
   for (const k of ["key", "title", "summary", "page"]) if (!meta[k]) throw new Error(`Knowledge file is missing "${k}".`);
-  return { key: meta.key, title: meta.title, summary: meta.summary, page: meta.page, order: Number(meta.order) || 0, body: m[2].trim() };
+  return { key: meta.key, title: meta.title, summary: meta.summary, summaryRoman: meta.summary_roman || undefined, summaryUrdu: meta.summary_urdu || undefined, page: meta.page, order: Number(meta.order) || 0, body: m[2].trim() };
 }
 
 /** Extracts "Q: … / A: …" pairs from a section body (used for the FAQ section). */
@@ -43,6 +46,8 @@ export const sectionInputSchema = z.object({
     .trim()
     .min(10, { error: "Please write a short answer (at least 10 characters)." })
     .max(1500, { error: "Keep the short answer under 1500 characters." }),
+  summaryRoman: z.string().trim().max(1500, { error: "Keep the Roman Urdu answer under 1500 characters." }).optional(),
+  summaryUrdu: z.string().trim().max(1500, { error: "Keep the Urdu answer under 1500 characters." }).optional(),
   body: z.string().trim().min(2, { error: "Please enter the page content." }).max(20000),
   note: z.string().trim().max(200).optional(),
 });
@@ -59,6 +64,11 @@ export function getSectionWithHistory(db: PrismaClient, key: string) {
   });
 }
 
+const translations = (x: { summaryRoman?: string; summaryUrdu?: string }) => ({
+  summaryRoman: x.summaryRoman || null,
+  summaryUrdu: x.summaryUrdu || null,
+});
+
 /** Saves a new version of a section; the previous content stays in the revision history. */
 export async function saveSection(db: PrismaClient, actor: AdminUser, key: string, input: SectionInput) {
   return db.$transaction(async (tx) => {
@@ -66,10 +76,10 @@ export async function saveSection(db: PrismaClient, actor: AdminUser, key: strin
     if (!current) return false;
     await tx.knowledgeSection.update({
       where: { key },
-      data: { title: input.title, summary: input.summary, body: input.body, updatedBy: actor.email },
+      data: { ...translations(input), title: input.title, summary: input.summary, body: input.body, updatedBy: actor.email },
     });
     await tx.knowledgeRevision.create({
-      data: { sectionKey: key, title: input.title, summary: input.summary, body: input.body, authorEmail: actor.email, note: input.note || null },
+      data: { ...translations(input), sectionKey: key, title: input.title, summary: input.summary, body: input.body, authorEmail: actor.email, note: input.note || null },
     });
     await writeAudit(tx, actor, AUDIT_ACTIONS.knowledgeUpdated, { type: "knowledge", id: key }, { title: input.title });
     return true;
@@ -83,6 +93,8 @@ export async function restoreRevision(db: PrismaClient, actor: AdminUser, revisi
   await saveSection(db, actor, rev.sectionKey, {
     title: rev.title,
     summary: rev.summary,
+    summaryRoman: rev.summaryRoman ?? undefined,
+    summaryUrdu: rev.summaryUrdu ?? undefined,
     body: rev.body,
     note: `Restored version from ${rev.createdAt.toISOString().slice(0, 16).replace("T", " ")} UTC`,
   });
@@ -96,12 +108,21 @@ export async function restoreRevision(db: PrismaClient, actor: AdminUser, revisi
 export async function seedSectionsFromFiles(db: PrismaClient, files: KnowledgeFileSection[]) {
   const added: string[] = [];
   for (const f of files) {
-    if (await db.knowledgeSection.findUnique({ where: { key: f.key }, select: { key: true } })) continue;
+    const existing = await db.knowledgeSection.findUnique({ where: { key: f.key }, select: { summaryRoman: true, summaryUrdu: true } });
+    if (existing) {
+      // Fill only translations that are still empty; never change anything staff have written.
+      const fill = {
+        ...(!existing.summaryRoman && f.summaryRoman ? { summaryRoman: f.summaryRoman } : {}),
+        ...(!existing.summaryUrdu && f.summaryUrdu ? { summaryUrdu: f.summaryUrdu } : {}),
+      };
+      if (Object.keys(fill).length) await db.knowledgeSection.update({ where: { key: f.key }, data: fill });
+      continue;
+    }
     await db.knowledgeSection.create({
-      data: { key: f.key, title: f.title, summary: f.summary, body: f.body, sortOrder: f.order, page: f.page, updatedBy: "knowledge files" },
+      data: { ...translations(f), key: f.key, title: f.title, summary: f.summary, body: f.body, sortOrder: f.order, page: f.page, updatedBy: "knowledge files" },
     });
     await db.knowledgeRevision.create({
-      data: { sectionKey: f.key, title: f.title, summary: f.summary, body: f.body, authorEmail: "knowledge files", note: "Initial import from knowledge/aida" },
+      data: { ...translations(f), sectionKey: f.key, title: f.title, summary: f.summary, body: f.body, authorEmail: "knowledge files", note: "Initial import from knowledge/aida" },
     });
     added.push(f.key);
   }

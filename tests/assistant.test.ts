@@ -6,7 +6,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { sslFor } from "@/lib/db-ssl";
 import { buildKnowledge } from "@/features/assistant/knowledge";
-import { isGreeting, matchFaq, offlineReply, rankIntents, WELCOME } from "@/features/assistant/offline";
+import { detectLanguage, isGreeting, matchFaq, offlineReply, rankIntents, WELCOME } from "@/features/assistant/offline";
 import { AssistantUnavailableError, isAiConfigured } from "@/features/assistant/claude";
 import { ASSISTANT_LIMITS, handleAssistantMessage } from "@/features/assistant/service";
 import { EMPTY_SITE_CONTENT } from "@/features/content/site-content";
@@ -15,7 +15,7 @@ import { parseFaqPairs, parseKnowledgeFile } from "@/features/knowledge/knowledg
 // The real knowledge base files, exactly as the seed imports them.
 const dir = path.resolve("knowledge/aida");
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md")).sort().map((f) => parseKnowledgeFile(fs.readFileSync(path.join(dir, f), "utf8")));
-const sections = files.map(({ key, title, summary, page }) => ({ key, title, summary, page }));
+const sections = files.map(({ key, title, summary, summaryRoman, summaryUrdu, page }) => ({ key, title, summary, summaryRoman, summaryUrdu, page }));
 const faq = parseFaqPairs(files.find((f) => f.key === "faq")!.body).map((p, i) => ({ id: `faq${i}`, ...p }));
 const sources = { faq, sections };
 const ask = (q: string) => offlineReply(q, sources);
@@ -64,7 +64,7 @@ describe("questions in English, Roman Urdu and Urdu", () => {
     ["class kab hoti hai", "9:00 PM"],
     ["کلاس کا وقت کیا ہے", "9:00 PM"],
     ["How long is the course?", "10 days"],
-    ["kitne din ka course hai", "10 days"],
+    ["kitne din ka course hai", "10 din"],
     ["Do I need a laptop?", "laptop"],
     ["kya mobile se class le sakte hain", "laptop"],
     ["Is free ChatGPT enough?", "ChatGPT"],
@@ -87,6 +87,26 @@ describe("questions in English, Roman Urdu and Urdu", () => {
   ];
   it.each(cases)("%s", (q, expected) => {
     expect(ask(q).toLowerCase()).toContain(expected.toLowerCase());
+  });
+
+  it("replies in the visitor's language", () => {
+    expect(detectLanguage("What is the fee?")).toBe("en");
+    expect(detectLanguage("fees kitni hai")).toBe("roman");
+    expect(detectLanguage("فیس کتنی ہے؟")).toBe("urdu");
+
+    const roman = ask("class kab hoti hai");
+    expect(roman).toContain("Classes raat 9:00 PM");
+    expect(roman).toContain("Mazeed maloomat: /programme");
+    expect(ask("refund policy kya hai")).toContain("refund kar di jati hai");
+    expect(ask("laptop zaroori hai kya?")).toContain("Laptop zaroori hai");
+
+    const urdu = ask("فیس کتنی ہے؟");
+    expect(urdu).toContain("کورس فیس");
+    expect(urdu).toContain("مزید معلومات: /fees-admission");
+
+    expect(ask("What is the fee?")).toMatch(/PKR 15,000[\s\S]*More details: \/fees-admission/);
+    expect(ask("hostel ka intezam hai kya?")).toMatch(/^Maazrat/);
+    expect(ask("کیا ہاسٹل کی سہولت ہے؟")).toMatch(/^معذرت/);
   });
 
   it("includes a relevant website link", () => {

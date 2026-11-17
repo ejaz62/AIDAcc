@@ -4,6 +4,8 @@ title: Frequently Asked Questions
 order: 12
 page: /faq
 summary: Common questions about AIDA's programme, fees, schedule, requirements, refunds and certificates are answered on the FAQ page.
+summary_roman: AIDA ke programme, fee, schedule, requirements, refund aur certificate ke aam sawalat ke jawab FAQ page par hain.
+summary_urdu: AIDA کے پروگرام، فیس، شیڈول، ضروریات، ریفنڈ اور سرٹیفکیٹ سے متعلق عام سوالات کے جوابات FAQ صفحے پر موجود ہیں۔
 ---
 Q: How many courses does AIDA offer?
 A: AIDA currently offers one confirmed programme: the AIDA AI Training Programme.

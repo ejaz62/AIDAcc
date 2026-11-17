@@ -17,6 +17,8 @@ export async function saveKnowledge(key: string, _prev: KnowledgeFormState, form
   const values = {
     title: String(formData.get("title") ?? ""),
     summary: String(formData.get("summary") ?? ""),
+    summaryRoman: String(formData.get("summaryRoman") ?? ""),
+    summaryUrdu: String(formData.get("summaryUrdu") ?? ""),
     body: String(formData.get("body") ?? ""),
     note: String(formData.get("note") ?? ""),
   };

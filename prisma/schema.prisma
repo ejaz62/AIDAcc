@@ -114,22 +114,22 @@ model LoginAttempt {
 
 /// A staff member who can sign in to the admin area. There is no public sign-up.
 model User {
-  id            String             @id
-  name          String
-  email         String             @unique
-  emailVerified Boolean            @default(false)
-  image         String?
+  id               String             @id
+  name             String
+  email            String             @unique
+  emailVerified    Boolean            @default(false)
+  image            String?
   /// "admin" — the only role for now.
-  role          String             @default("admin")
+  role             String             @default("admin")
   /// Disabled accounts cannot sign in or use existing sessions.
-  disabled      Boolean            @default(false)
+  disabled         Boolean            @default(false)
   /// Which new-registration emails this staff member receives.
-  notificationMode NotificationMode @default(NONE)
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  notes         RegistrationNote[]
+  notificationMode NotificationMode   @default(NONE)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  notes            RegistrationNote[]
 
   @@map("users")
 }
@@ -324,33 +324,38 @@ model AssistantMessage {
 /// One section of the AIDA knowledge base, e.g. "Course Fees and Payment".
 /// Seeded from knowledge/aida/*.md; edited by staff in Admin → Knowledge base.
 model KnowledgeSection {
-  key       String              @id @db.VarChar(40)
-  title     String              @db.VarChar(120)
+  key          String              @id @db.VarChar(40)
+  title        String              @db.VarChar(120)
   /// Short answer the assistant gives for this topic.
-  summary   String              @db.Text
+  summary      String              @db.Text
+  /// The same short answer in Roman Urdu and in Urdu (optional; English is used when empty).
+  summaryRoman String?             @db.Text
+  summaryUrdu  String?             @db.Text
   /// Full content (Markdown) shown on the website.
-  body      String              @db.Text
-  sortOrder Int                 @default(0)
+  body         String              @db.Text
+  sortOrder    Int                 @default(0)
   /// Website page that presents this section.
-  page      String              @db.VarChar(80)
-  updatedAt DateTime            @updatedAt
-  updatedBy String?             @db.VarChar(254)
-  revisions KnowledgeRevision[]
+  page         String              @db.VarChar(80)
+  updatedAt    DateTime            @updatedAt
+  updatedBy    String?             @db.VarChar(254)
+  revisions    KnowledgeRevision[]
 
   @@map("knowledge_sections")
 }
 
 /// Every saved version of a section, so no verified information is ever lost.
 model KnowledgeRevision {
-  id         String           @id @default(cuid())
-  sectionKey String
-  section    KnowledgeSection @relation(fields: [sectionKey], references: [key], onDelete: Cascade)
-  title      String           @db.VarChar(120)
-  summary    String           @db.Text
-  body       String           @db.Text
-  authorEmail String          @db.VarChar(254)
-  note       String?          @db.VarChar(200)
-  createdAt  DateTime         @default(now())
+  id           String           @id @default(cuid())
+  sectionKey   String
+  section      KnowledgeSection @relation(fields: [sectionKey], references: [key], onDelete: Cascade)
+  title        String           @db.VarChar(120)
+  summary      String           @db.Text
+  summaryRoman String?          @db.Text
+  summaryUrdu  String?          @db.Text
+  body         String           @db.Text
+  authorEmail  String           @db.VarChar(254)
+  note         String?          @db.VarChar(200)
+  createdAt    DateTime         @default(now())
 
   @@index([sectionKey, createdAt])
   @@map("knowledge_revisions")
