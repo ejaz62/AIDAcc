@@ -2,7 +2,8 @@ import type { PrismaClient } from "@/generated/prisma/client";
 import { learnerTypes } from "@/features/interest/schema";
 import { getPublishedSiteContent } from "@/features/content/site-content";
 import { enqueueEmail } from "./outbox";
-import { registrantConfirmation, staffAlert, staffDigest } from "./templates";
+import { BATCHES, labelOf } from "@/features/admission/schema";
+import { admissionAlert, applicantConfirmation, registrantConfirmation, staffAlert, staffDigest } from "./templates";
 
 const learnerLabel = (v: string) => learnerTypes.find((t) => t.value === v)?.label ?? v;
 
@@ -67,4 +68,38 @@ export async function queueDailyDigest(db: PrismaClient, now: Date, siteUrl: URL
   });
   for (const s of staff) await enqueueEmail(db, { kind: "staff_digest", to: s.email, email });
   return { total, queued: staff.length };
+}
+
+/**
+ * Queues the emails for a new admission application: an alert to every active
+ * staff member who receives email notifications (instant or daily — admissions
+ * are always sent straight away) and a confirmation to the applicant if they
+ * gave an email address.
+ */
+export async function queueNewAdmissionEmails(db: PrismaClient, applicationId: string, siteUrl: URL) {
+  const app = await db.admissionApplication.findUnique({ where: { id: applicationId } });
+  if (!app) return [];
+  const [site, staff] = await Promise.all([
+    getPublishedSiteContent(db),
+    db.user.findMany({ where: { disabled: false, notificationMode: { not: "NONE" } }, select: { email: true } }),
+  ]);
+  const ids: string[] = [];
+  const adminUrl = new URL(`/admin/admissions/${app.id}`, siteUrl).toString();
+  const alert = admissionAlert({
+    fullName: app.fullName,
+    location: app.location,
+    course: app.course,
+    batchLabel: labelOf(BATCHES, app.batch),
+    adminUrl,
+  });
+  for (const s of staff) ids.push((await enqueueEmail(db, { kind: "admission_alert", to: s.email, email: alert })).id);
+  if (app.email) {
+    const confirmation = applicantConfirmation({
+      fullName: app.fullName,
+      course: app.course,
+      footer: { contactEmail: site.contactEmail || undefined },
+    });
+    ids.push((await enqueueEmail(db, { kind: "applicant_confirmation", to: app.email, email: confirmation })).id);
+  }
+  return ids;
 }

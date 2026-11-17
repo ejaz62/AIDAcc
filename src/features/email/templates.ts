@@ -191,3 +191,71 @@ export function testEmail(input: { recipientName: string; provider: string }): R
     text: `Hello ${oneLine(input.recipientName)},\n\nThis is a test message from the ${site.name} admin area. If you can read it, email delivery is working.\n\nDelivery mode: ${input.provider}`,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Admission applications
+// ---------------------------------------------------------------------------
+
+/** Staff alert for a new admission application. Contact details stay in the admin area. */
+export function admissionAlert(input: {
+  fullName: string;
+  location: string;
+  course: string;
+  batchLabel: string;
+  adminUrl: string;
+}): RenderedEmail {
+  const name = oneLine(input.fullName);
+  const subject = oneLine(`New admission application: ${name}`).slice(0, 200);
+  const rows = [
+    ["Name", name],
+    ["City and country", oneLine(input.location)],
+    ["Course", oneLine(input.course)],
+    ["Preferred batch", input.batchLabel],
+  ]
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:6px 12px 6px 0;font-size:13px;color:#646c86;white-space:nowrap">${escapeHtml(k)}</td><td style="padding:6px 0;font-size:14px">${escapeHtml(v)}</td></tr>`,
+    )
+    .join("");
+  const html = layout({
+    preheader: `${name} applied for admission.`,
+    heading: "New admission application",
+    bodyHtml: [
+      `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 8px">${rows}</table>`,
+      button(input.adminUrl, "Review application"),
+      p(`<span style="font-size:12px;color:#646c86">The WhatsApp number and other details are in the admin area.</span>`),
+    ].join("\n"),
+  });
+  const text = [
+    "New admission application",
+    "",
+    `Name: ${name}`,
+    `City and country: ${oneLine(input.location)}`,
+    `Course: ${oneLine(input.course)}`,
+    `Preferred batch: ${input.batchLabel}`,
+    "",
+    `Review application: ${input.adminUrl}`,
+  ].join("\n");
+  return { subject, html, text };
+}
+
+/** Confirmation to an applicant who gave an email address. */
+export function applicantConfirmation(input: { fullName: string; course: string; footer?: Footer }): RenderedEmail {
+  const first = oneLine(input.fullName).split(" ")[0] || "there";
+  const subject = `We have received your application — ${site.name}`;
+  const next =
+    "AIDA Reception will contact you on WhatsApp to confirm your batch and explain how to pay. Your place is confirmed only after AIDA verifies your payment.";
+  const html = layout({
+    preheader: "Your AIDA application has been received.",
+    heading: "Application received",
+    bodyHtml: [
+      p(`Hello ${escapeHtml(first)},`),
+      p(`Thank you for applying for the <strong>${escapeHtml(oneLine(input.course))}</strong>.`),
+      p(escapeHtml(next)),
+      note("A payment screenshot on its own is not proof of payment. Please wait for AIDA to confirm your place."),
+    ].join("\n"),
+    footer: input.footer,
+  });
+  const text = [`Hello ${first},`, "", `Thank you for applying for the ${oneLine(input.course)}.`, "", next].join("\n");
+  return { subject, html, text };
+}

@@ -4,6 +4,8 @@ export const KIND_LABELS: Record<string, string> = {
   staff_alert: "Staff alert",
   staff_digest: "Daily summary",
   test: "Test email",
+  admission_alert: "Admission alert",
+  applicant_confirmation: "Confirmation to applicant",
 };
 
 /** `tone` maps onto the admin StatusBadge colours. */

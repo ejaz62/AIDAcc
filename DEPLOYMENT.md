@@ -107,6 +107,10 @@ notifications are recorded in **Admin → Emails** (so you can check them) but n
    | `EMAIL_FROM` | e.g. `AIDA <noreply@your-verified-domain>` |
    | `EMAIL_REPLY_TO` | optional, e.g. the official enquiries address |
 
+   **Quick start without a domain:** Resend lets you send from `AIDA <onboarding@resend.dev>`, but only to the
+   email address of the Resend account itself. Sign up with the owner's Gmail and staff alerts (new admission
+   applications) reach that Gmail. Confirmations to applicants need a verified domain.
+
 4. Redeploy, then use **Admin → Emails → Send me a test email**.
 5. Each staff member chooses *instant alerts*, *daily summary* or *no emails* under **My account**.
 

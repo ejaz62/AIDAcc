@@ -7,6 +7,7 @@ import { DailyChart } from "@/features/admin/daily-chart";
 import { getDashboardStats, STATUSES } from "@/features/admin/registrations";
 import { requireAdmin } from "@/features/admin/session";
 import { AdminPageHeader, LoadingPanel, Panel } from "@/features/admin/ui";
+import { ADMISSION_STATUSES } from "@/features/admission/schema";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -18,11 +19,35 @@ const tileHelp: Record<string, string> = {
 
 async function Dashboard() {
   await requireAdmin();
-  const stats = await getDashboardStats(getDb(), new Date());
+  const db = getDb();
+  const [stats, admissionGroups] = await Promise.all([
+    getDashboardStats(db, new Date()),
+    db.admissionApplication.groupBy({ by: ["status"], _count: { _all: true } }),
+  ]);
+  const admissionCount = (status: string) => admissionGroups.find((g) => g.status === status)?._count._all ?? 0;
+  const admissionTotal = admissionGroups.reduce((sum, g) => sum + g._count._all, 0);
   const maxType = Math.max(1, ...stats.types.map((t) => t.count));
 
   return (
     <div className="space-y-6">
+      <Panel title="Admission applications">
+        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+          <Link href="/admin/admissions" className="rounded-(--radius-control) bg-ink-950 p-4 text-white hover:bg-ink-900">
+            <p className="text-xs text-ink-300">All applications</p>
+            <p className="mt-1 font-display text-3xl font-extrabold">{admissionTotal}</p>
+          </Link>
+          {ADMISSION_STATUSES.map((st) => (
+            <Link
+              key={st.value}
+              href={`/admin/admissions?status=${st.value}`}
+              className="rounded-(--radius-control) border border-border p-4 transition-colors hover:border-brand-300"
+            >
+              <p className="text-xs text-muted">{st.label}</p>
+              <p className="mt-1 font-display text-3xl font-extrabold text-ink-950">{admissionCount(st.value)}</p>
+            </Link>
+          ))}
+        </div>
+      </Panel>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-(--radius-card) bg-ink-950 p-5 text-white">
           <p className="text-sm text-ink-300">Total registrations</p>

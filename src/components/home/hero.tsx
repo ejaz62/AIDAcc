@@ -40,8 +40,8 @@ export function Hero() {
           <OpenAssistantButton className={buttonClasses({ variant: "secondary", size: "lg" })}>
             <MessageCircle className="size-4" aria-hidden /> Ask AIDA
           </OpenAssistantButton>
-          <ButtonLink href="/contact" variant="secondary" size="lg">
-            Contact AIDA
+          <ButtonLink href="/admission" variant="secondary" size="lg">
+            Apply now
           </ButtonLink>
         </div>
 

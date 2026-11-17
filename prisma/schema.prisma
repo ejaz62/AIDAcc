@@ -360,3 +360,58 @@ model KnowledgeRevision {
   @@index([sectionKey, createdAt])
   @@map("knowledge_revisions")
 }
+
+// ---------------------------------------------------------------------------
+// Student admission applications
+// ---------------------------------------------------------------------------
+
+enum AdmissionStatus {
+  NEW
+  CONTACTED
+  PAYMENT_PENDING
+  CONFIRMED
+  NOT_PROCEEDING
+}
+
+/// An application submitted through the public Admission form. A place is
+/// confirmed only after AIDA verifies the payment (status CONFIRMED).
+model AdmissionApplication {
+  id                String          @id @default(cuid())
+  fullName          String          @db.VarChar(120)
+  whatsapp          String          @db.VarChar(30)
+  email             String?         @db.VarChar(254)
+  location          String          @db.VarChar(120)
+  course            String          @db.VarChar(150)
+  /// Preferred monthly batch: B1 (1st–10th), B2 (11th–20th), B3 (21st–30th) or UNSURE.
+  batch             String          @db.VarChar(10)
+  /// YES / BASIC / NONE
+  computerKnowledge String          @db.VarChar(10)
+  /// NONE / SOME / REGULAR
+  aiExperience      String          @db.VarChar(10)
+  message           String?         @db.VarChar(1000)
+  status            AdmissionStatus @default(NEW)
+  /// When a staff member first opened it (unseen applications are flagged in admin).
+  seenAt            DateTime?
+  /// Salted hash of the applicant's IP (rate limiting); never the raw IP.
+  ipHash            String          @db.Char(64)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  notes             AdmissionNote[]
+
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@map("admission_applications")
+}
+
+/// Internal staff notes on an application. Deleted with the application.
+model AdmissionNote {
+  id            String               @id @default(cuid())
+  applicationId String
+  application   AdmissionApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  authorEmail   String               @db.VarChar(254)
+  body          String               @db.VarChar(2000)
+  createdAt     DateTime             @default(now())
+
+  @@index([applicationId, createdAt])
+  @@map("admission_notes")
+}

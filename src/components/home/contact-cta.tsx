@@ -1,5 +1,5 @@
 import { ArrowRight, Mail } from "lucide-react";
-import { contact, registerCta } from "@/content/site";
+import { applyCta, contact } from "@/content/site";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/primitives";
 
@@ -22,8 +22,8 @@ export function ContactCta() {
               Contact Reception
               <ArrowRight className="size-4" aria-hidden />
             </ButtonLink>
-            <ButtonLink href={registerCta.href} variant="outline-inverse" size="lg">
-              {registerCta.label}
+            <ButtonLink href={applyCta.href} variant="outline-inverse" size="lg">
+              {applyCta.label}
             </ButtonLink>
           </div>
           <p className="mx-auto mt-4 max-w-md text-sm text-ink-400">

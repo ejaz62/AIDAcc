@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { BookOpen, Building2, HelpCircle, Library, Sparkles, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, HelpCircle, Library, Sparkles, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items: Array<{ label: string; href: string; icon: LucideIcon }> = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Admissions", href: "/admin/admissions", icon: GraduationCap },
   { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
   { label: "Programmes", href: "/admin/programmes", icon: BookOpen },
   { label: "Knowledge base", href: "/admin/knowledge", icon: Library },

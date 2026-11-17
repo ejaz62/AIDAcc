@@ -41,6 +41,7 @@ export const footerNavigation = [
 ] as const;
 
 export const registerCta = { label: "Register interest", href: "/register-interest" } as const;
+export const applyCta = { label: "Apply now", href: "/admission" } as const;
 
 /** Shown wherever Register Interest appears, so it is never mistaken for an admission application. */
 export const notAnApplication = {

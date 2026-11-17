@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { navigation, registerCta } from "@/content/site";
+import { applyCta, navigation } from "@/content/site";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { useIsActive } from "./nav-links";
@@ -78,11 +78,11 @@ export function MobileNav() {
             })}
           </nav>
           <Link
-            href={registerCta.href}
+            href={applyCta.href}
             onClick={() => setOpen(false)}
             className={buttonClasses({ size: "lg", className: "mt-6 w-full" })}
           >
-            {registerCta.label}
+            {applyCta.label}
           </Link>
         </div>
       )}

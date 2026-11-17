@@ -49,7 +49,7 @@ function loadSaved(): { conversationId: string | null; messages: Message[] } | n
 /** Turns site paths like /fees-admission in a reply into links, without rendering any HTML. */
 function linkify(text: string): ReactNode[] {
   const parts = text.split(
-    /(\/(?:programmes(?:\/[a-z0-9-]+)?|programme|curriculum|fees-admission|founder|register-interest|contact|about|privacy|faq)\b)/g,
+    /(\/(?:programmes(?:\/[a-z0-9-]+)?|programme|curriculum|fees-admission|admission|founder|register-interest|contact|about|privacy|faq)\b)/g,
   );
   return parts.map((part, i) =>
     i % 2 === 1 ? (
@@ -182,7 +182,7 @@ export function AssistantWidget() {
         aria-controls="aida-assistant"
         aria-label={open ? "Close Ask AIDA assistant" : "Open Ask AIDA assistant"}
         className={cn(
-          "scale-original fixed top-(--aida-top,5rem) right-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:pr-5",
+          "scale-original fixed top-(--aida-top,6.5rem) right-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:pr-5",
           open && "hidden sm:flex",
         )}
       >
@@ -207,7 +207,7 @@ export function AssistantWidget() {
           id="aida-assistant"
           role="dialog"
           aria-label="Ask AIDA assistant"
-          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:top-[calc(var(--aida-top,5rem)+4.75rem)] sm:right-6 sm:h-[min(620px,calc(100dvh-var(--aida-top,5rem)-6rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
+          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:top-[calc(var(--aida-top,6.5rem)+4.75rem)] sm:right-6 sm:h-[min(620px,calc(100dvh-var(--aida-top,6.5rem)-6rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
         >
           <header className="scale-original flex items-center justify-between gap-3 bg-gradient-to-r from-ink-950 to-brand-950 px-4 py-3 text-white">
             <div className="flex items-center gap-3">

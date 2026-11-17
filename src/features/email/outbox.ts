@@ -4,7 +4,13 @@ import { EmailSendError, type EmailTransport } from "./transport";
 
 export const MAX_ATTEMPTS = 5;
 
-export type EmailKind = "registrant_confirmation" | "staff_alert" | "staff_digest" | "test";
+export type EmailKind =
+  | "registrant_confirmation"
+  | "staff_alert"
+  | "staff_digest"
+  | "test"
+  | "admission_alert"
+  | "applicant_confirmation";
 
 export async function enqueueEmail(
   db: PrismaClient,

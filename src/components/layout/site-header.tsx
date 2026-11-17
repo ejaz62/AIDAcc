@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { Menu } from "lucide-react";
-import { registerCta, site } from "@/content/site";
+import { applyCta, site } from "@/content/site";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/primitives";
 import { Logo } from "@/components/ui/logo";
@@ -22,8 +22,8 @@ export function SiteHeader() {
         <DesktopNavLinks />
 
         <div className="flex items-center gap-2">
-          <ButtonLink href={registerCta.href} size="sm" className="hidden sm:inline-flex">
-            {registerCta.label}
+          <ButtonLink href={applyCta.href} size="sm" className="hidden sm:inline-flex">
+            {applyCta.label}
           </ButtonLink>
           <Suspense
             fallback={

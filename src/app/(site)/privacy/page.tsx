@@ -37,6 +37,24 @@ const sections: Array<{ heading: string; body: React.ReactNode }> = [
     ),
   },
   {
+    heading: "Admission applications",
+    body: (
+      <>
+        <p>When you apply through the Student Admission Form, we collect:</p>
+        <ul>
+          <li>your full name, WhatsApp number, and (optionally) your email address;</li>
+          <li>your city and country, chosen course and preferred batch;</li>
+          <li>your answers about computer knowledge and experience with AI tools, and any message you include.</li>
+        </ul>
+        <p>
+          We use these details only to process your application and contact you about it (usually on WhatsApp). They are
+          seen only by AIDA staff, kept while your application and enrolment are active, and deleted on request. As with the
+          other forms, we store a salted hash of your IP address to prevent abuse.
+        </p>
+      </>
+    ),
+  },
+  {
     heading: "Ask AIDA assistant",
     body: (
       <p>

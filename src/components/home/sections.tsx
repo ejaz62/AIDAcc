@@ -111,8 +111,11 @@ export function ProgrammeFacts() {
             lead="A 10-day, live, instructor-led online course for complete beginners. Learn Claude and AI tools, build websites with AI, create AI agents and publish your work online."
           />
           <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink href="/fees-admission">
-              Fees &amp; admission <ArrowRight className="size-4" aria-hidden />
+            <ButtonLink href="/admission">
+              Apply now <ArrowRight className="size-4" aria-hidden />
+            </ButtonLink>
+            <ButtonLink href="/fees-admission" variant="secondary">
+              Fees &amp; admission
             </ButtonLink>
             <ButtonLink href="/programme" variant="secondary">
               Programme details

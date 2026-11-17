@@ -118,6 +118,19 @@ Public pages read published content through cached functions (`src/features/cont
 content type; every admin change calls `updateTag`, so the next page regeneration shows it. Note that the
 **production build needs database access** (`DATABASE_URL`) because public pages are prerendered from published content.
 
+## Student admissions
+
+- **Public form:** `/admission` (linked from the header "Apply now" button, the homepage and Fees & Admission).
+  It asks for name, WhatsApp, optional email, city/country, course, preferred batch, computer knowledge, AI
+  experience and an optional message. Protected by a honeypot, a minimum fill time, one-time form tokens and a
+  rate limit (5 submissions per 15 minutes per hashed IP).
+- **Admin → Admissions:** list with search and status filter, detail page with WhatsApp/Call buttons, status
+  (New → Contacted → Awaiting payment → Confirmed / Not proceeding), internal notes and permanent delete. A red
+  banner on every admin page shows how many applications nobody has opened yet; the dashboard shows counts.
+- **Email alerts:** every active staff member whose email preference is Instant or Daily gets an alert for each new
+  application (contact details stay in admin). Applicants who give an email get a confirmation. Emails are only
+  delivered when an email provider is configured (see DEPLOYMENT.md, "Email"); otherwise they appear in Admin → Emails.
+
 ## AIDA knowledge base
 
 The verified AIDA information (13 sections: About AIDA, Founder Profile, AI Training Programme, Duration and

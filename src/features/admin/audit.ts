@@ -34,6 +34,9 @@ export const AUDIT_ACTIONS = {
   faqUnpublished: "faq.unpublished",
   faqDeleted: "faq.deleted",
   knowledgeUpdated: "knowledge.updated",
+  admissionStatusChanged: "admission.status_changed",
+  admissionNoteAdded: "admission.note_added",
+  admissionDeleted: "admission.deleted",
 } as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -69,6 +72,9 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "faq.unpublished": "FAQ unpublished",
   "faq.deleted": "FAQ deleted",
   "knowledge.updated": "Knowledge base section updated",
+  "admission.status_changed": "Admission status changed",
+  "admission.note_added": "Admission note added",
+  "admission.deleted": "Admission application deleted",
 };
 
 /**

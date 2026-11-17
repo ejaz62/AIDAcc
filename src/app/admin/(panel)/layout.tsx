@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { LogOut } from "lucide-react";
+import { BellRing, LogOut } from "lucide-react";
+import { getDb } from "@/lib/db";
+import { countUnseenAdmissions } from "@/features/admission/admin";
 import { Logo } from "@/components/ui/logo";
 import { AdminMobileNav, AdminSidebarNav } from "@/features/admin/admin-nav";
 import { signOut } from "@/features/admin/auth-actions";
@@ -36,6 +38,28 @@ async function CurrentUser({ compact = false }: { compact?: boolean }) {
   );
 }
 
+/** Notification shown on every admin page while there are unopened admission applications. */
+async function AdmissionsAlert() {
+  await requireAdmin();
+  const count = await countUnseenAdmissions(getDb());
+  if (count === 0) return null;
+  return (
+    <Link
+      href="/admin/admissions"
+      role="status"
+      className="mb-6 flex items-center gap-3 rounded-(--radius-card) border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800 transition-colors hover:bg-red-100"
+    >
+      <span className="relative flex size-8 items-center justify-center rounded-full bg-red-600 text-white">
+        <BellRing className="size-4" aria-hidden />
+        <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-white text-[0.6rem] font-bold text-red-700 ring-1 ring-red-200">
+          {count > 9 ? "9+" : count}
+        </span>
+      </span>
+      {count === 1 ? "1 new admission application" : `${count} new admission applications`} — review now →
+    </Link>
+  );
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-ink-50 lg:flex-row">
@@ -67,6 +91,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </header>
 
       <main id="main" className="min-w-0 flex-1 px-4 py-8 sm:px-8 lg:px-10 lg:py-10">
+        <Suspense fallback={null}>
+          <AdmissionsAlert />
+        </Suspense>
         {children}
       </main>
     </div>
