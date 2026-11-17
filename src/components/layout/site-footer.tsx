@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import { footerNavigation, site } from "@/content/site";
 import { Container } from "@/components/ui/primitives";
 import { Logo } from "@/components/ui/logo";
@@ -24,6 +25,9 @@ export function SiteFooter() {
           <p>
             &copy; {site.fullName}. All rights reserved.
           </p>
+          <Link href="/admin/sign-in" rel="nofollow" className="flex items-center gap-1.5 transition-colors hover:text-white">
+            <Lock className="size-3.5" aria-hidden /> Staff login
+          </Link>
         </div>
       </Container>
     </footer>
