@@ -4,13 +4,15 @@ import type { PrismaClient } from "@/generated/prisma/client";
 export const RETENTION = {
   submissionAttemptsDays: 30,
   loginAttemptsDays: 90,
+  /** Delivered, previewed or permanently failed emails (they contain personal data). */
+  emailsDays: 30,
 } as const;
 
 const daysAgo = (now: Date, days: number) => new Date(now.getTime() - days * 86_400_000);
 
 /**
  * Removes records that are only needed briefly: rate-limit and sign-in attempt
- * logs past their retention period, plus expired sessions and verification tokens.
+ * logs past their retention period, expired sessions and verification tokens, and old email records.
  */
 export async function pruneOldRecords(db: PrismaClient, now = new Date()) {
   // Sequential on purpose: a daily job gains nothing from parallel queries, and it keeps load low.
@@ -22,10 +24,14 @@ export async function pruneOldRecords(db: PrismaClient, now = new Date()) {
   });
   const sessions = await db.session.deleteMany({ where: { expiresAt: { lt: now } } });
   const verifications = await db.verification.deleteMany({ where: { expiresAt: { lt: now } } });
+  const emails = await db.emailMessage.deleteMany({
+    where: { status: { in: ["SENT", "PREVIEW", "FAILED"] }, createdAt: { lt: daysAgo(now, RETENTION.emailsDays) } },
+  });
   return {
     submissionAttempts: submissionAttempts.count,
     loginAttempts: loginAttempts.count,
     sessions: sessions.count,
     verifications: verifications.count,
+    emails: emails.count,
   };
 }

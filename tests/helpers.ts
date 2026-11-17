@@ -43,6 +43,7 @@ export function createMemoryRepo(publishedProgrammeIds: string[] = []) {
       if (attempts.some((a) => a.formToken === formToken)) throw new DuplicateTokenError();
       const existing = registrations.get(data.email);
       let result: "created" | "updated" | "cooldown";
+      const id = `mem-${data.email}`;
       if (!existing) {
         registrations.set(data.email, { ...data, submissionCount: 1, lastSubmittedAt: now, createdAt: now });
         result = "created";
@@ -53,7 +54,7 @@ export function createMemoryRepo(publishedProgrammeIds: string[] = []) {
         result = "updated";
       }
       attempts.push({ formToken, ipHash, outcome: result === "created" ? "accepted" : "duplicate", createdAt: now });
-      return result;
+      return { result, id };
     },
   };
   return { repo, attempts, registrations };

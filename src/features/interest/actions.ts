@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { getClientIpHash } from "@/lib/request";
+import { notifyNewRegistration } from "@/features/email/server";
 import { createPrismaInterestRepository } from "./prisma-repository";
 import { MESSAGES, submitInterest } from "./service";
 import type { InterestFormState } from "./types";
@@ -18,6 +19,7 @@ export async function registerInterest(
       ipHash: await getClientIpHash(),
       now: new Date(),
       generateToken: randomUUID,
+      onCreated: notifyNewRegistration,
     });
   } catch (err) {
     // Log server-side only; never leak internals (e.g. connection strings) to the browser.

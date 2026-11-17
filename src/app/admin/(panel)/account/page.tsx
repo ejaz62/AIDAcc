@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ChangePasswordForm } from "@/features/admin/staff-forms";
+import { NotificationPreference } from "@/features/email/email-controls";
+import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/features/admin/session";
 import { AdminPageHeader, LoadingPanel, Panel } from "@/features/admin/ui";
 
@@ -8,6 +10,7 @@ export const metadata: Metadata = { title: "My account" };
 
 async function Account() {
   const me = await requireAdmin();
+  const prefs = await getDb().user.findUnique({ where: { id: me.id }, select: { notificationMode: true } });
   return (
     <div className="space-y-6">
       <Panel title="Your details">
@@ -21,6 +24,9 @@ async function Account() {
             <dd className="font-medium break-all text-ink-900">{me.email}</dd>
           </div>
         </dl>
+      </Panel>
+      <Panel title="Email notifications">
+        <NotificationPreference current={prefs?.notificationMode ?? "NONE"} />
       </Panel>
       <Panel title="Change password">
         <ChangePasswordForm />

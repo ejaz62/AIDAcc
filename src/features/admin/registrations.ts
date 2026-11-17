@@ -80,6 +80,7 @@ export function getRegistration(db: PrismaClient, id: string) {
     where: { id },
     include: {
       programme: { select: { id: true, title: true, status: true } },
+      emails: { orderBy: { createdAt: "desc" }, select: { id: true, kind: true, status: true, createdAt: true } },
       notes: { orderBy: { createdAt: "desc" }, include: { author: { select: { name: true, email: true } } } },
     },
   });

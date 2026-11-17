@@ -1,6 +1,7 @@
 import type { InterestField, InterestInput } from "./schema";
 
 export type SubmissionOutcome = "accepted" | "duplicate" | "spam";
+export type SaveResult = "created" | "updated" | "cooldown";
 
 /** Persistence port — implemented with Prisma in production, in-memory in tests. */
 export interface InterestRepository {
@@ -18,7 +19,7 @@ export interface InterestRepository {
     data: InterestInput,
     now: Date,
     resubmitCooldownMs: number,
-  ): Promise<"created" | "updated" | "cooldown">;
+  ): Promise<{ result: SaveResult; id: string }>;
 }
 
 export class DuplicateTokenError extends Error {

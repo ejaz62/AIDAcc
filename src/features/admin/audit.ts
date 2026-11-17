@@ -25,6 +25,9 @@ export const AUDIT_ACTIONS = {
   staffEnabled: "staff.enabled",
   staffPasswordReset: "staff.password_reset",
   passwordChanged: "account.password_changed",
+  notificationsChanged: "account.notifications_changed",
+  testEmailSent: "email.test_sent",
+  emailsRetried: "email.retried",
 } as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -51,6 +54,9 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "staff.enabled": "Staff account re-enabled",
   "staff.password_reset": "Staff password reset",
   "account.password_changed": "Own password changed",
+  "account.notifications_changed": "Email preference changed",
+  "email.test_sent": "Test email sent",
+  "email.retried": "Email delivery retried",
 };
 
 /**

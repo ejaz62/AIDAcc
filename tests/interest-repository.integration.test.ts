@@ -41,16 +41,16 @@ describe.skipIf(!url)("Prisma interest repository (PostgreSQL)", () => {
     const repo = createPrismaInterestRepository(db);
     const t0 = new Date();
 
-    expect(await repo.saveRegistration({ formToken: randomUUID(), ipHash }, data("one"), t0, POLICY.resubmitCooldownMs)).toBe(
+    expect(await repo.saveRegistration({ formToken: randomUUID(), ipHash }, data("one"), t0, POLICY.resubmitCooldownMs).then((r) => r.result)).toBe(
       "created",
     );
     expect(
-      await repo.saveRegistration({ formToken: randomUUID(), ipHash }, data("one"), t0, POLICY.resubmitCooldownMs),
+      (await repo.saveRegistration({ formToken: randomUUID(), ipHash }, data("one"), t0, POLICY.resubmitCooldownMs)).result,
     ).toBe("cooldown");
 
     const later = new Date(t0.getTime() + POLICY.resubmitCooldownMs + 1000);
     expect(
-      await repo.saveRegistration({ formToken: randomUUID(), ipHash }, data("one"), later, POLICY.resubmitCooldownMs),
+      (await repo.saveRegistration({ formToken: randomUUID(), ipHash }, data("one"), later, POLICY.resubmitCooldownMs)).result,
     ).toBe("updated");
 
     const rows = await db.interestRegistration.findMany({ where: { email: `one${domain}` } });

@@ -26,6 +26,8 @@ export interface SubmissionContext {
   now: Date;
   /** Fallback token when the browser did not supply one (e.g. JavaScript disabled). */
   generateToken: () => string;
+  /** Called once when a brand-new registration is stored (not for duplicates). */
+  onCreated?: (registrationId: string) => Promise<void>;
 }
 
 /**
@@ -88,7 +90,13 @@ export async function submitInterest(
 
   // 6. Persist (create or update, one row per email).
   try {
-    await repo.saveRegistration(attempt, parsed.data, ctx.now, POLICY.resubmitCooldownMs);
+    const saved = await repo.saveRegistration(attempt, parsed.data, ctx.now, POLICY.resubmitCooldownMs);
+    if (saved.result === "created" && ctx.onCreated) {
+      // Notification problems must never make a successful registration look like a failure.
+      await ctx.onCreated(saved.id).catch((err) =>
+        console.error("[submitInterest] notification failed:", err instanceof Error ? err.message : err),
+      );
+    }
   } catch (err) {
     if (err instanceof DuplicateTokenError) return success;
     throw err;

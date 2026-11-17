@@ -28,6 +28,7 @@ const statusTones: Record<string, string> = {
   NEW: "bg-brand-50 text-brand-700 ring-brand-200",
   CONTACTED: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   ARCHIVED: "bg-ink-100 text-ink-600 ring-ink-200",
+  FAILED: "bg-red-50 text-red-700 ring-red-200",
 };
 
 export function StatusBadge({ status, label }: { status: string; label: string }) {

@@ -144,6 +144,8 @@ export function RegisterInterestForm({ programmes = [] }: { programmes?: Program
           name="learnerType"
           required
           defaultValue={values.learnerType ?? ""}
+          // React does not re-apply a <select>'s defaultValue after a failed submit; remounting does.
+          key={`learnerType-${values.learnerType ?? ""}-${state.status}`}
           aria-invalid={!!errors.learnerType}
           aria-describedby={describedBy("learnerType", { error: !!errors.learnerType })}
           className={cn(inputClasses(!!errors.learnerType), "appearance-none pr-11")}

@@ -44,6 +44,7 @@ model InterestRegistration {
   /// Optional published programme the person is interested in.
   programmeId     String?
   programme       Programme?         @relation(fields: [programmeId], references: [id], onDelete: SetNull)
+  emails          EmailMessage[]
 
   @@index([createdAt])
   @@index([programmeId])
@@ -122,6 +123,8 @@ model User {
   role          String             @default("admin")
   /// Disabled accounts cannot sign in or use existing sessions.
   disabled      Boolean            @default(false)
+  /// Which new-registration emails this staff member receives.
+  notificationMode NotificationMode @default(NONE)
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   sessions      Session[]
@@ -221,4 +224,47 @@ model SiteContent {
   updatedAt   DateTime  @updatedAt
 
   @@map("site_content")
+}
+
+// ---------------------------------------------------------------------------
+// Email
+// ---------------------------------------------------------------------------
+
+enum NotificationMode {
+  NONE
+  INSTANT
+  DAILY
+}
+
+enum EmailStatus {
+  PENDING
+  /// Delivered by the email provider.
+  SENT
+  /// Recorded but not sent, because no email provider is configured.
+  PREVIEW
+  FAILED
+}
+
+/// Outbox: every email is stored first, then delivered (and retried on failure).
+/// Emails about a registration are deleted together with it.
+model EmailMessage {
+  id             String                @id @default(cuid())
+  kind           String                @db.VarChar(40)
+  to             String                @db.VarChar(254)
+  subject        String                @db.VarChar(200)
+  html           String                @db.Text
+  text           String                @db.Text
+  status         EmailStatus           @default(PENDING)
+  attempts       Int                   @default(0)
+  lastError      String?               @db.VarChar(500)
+  provider       String?               @db.VarChar(20)
+  providerId     String?               @db.VarChar(100)
+  registrationId String?
+  registration   InterestRegistration? @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime              @default(now())
+  sentAt         DateTime?
+
+  @@index([status, createdAt])
+  @@index([registrationId])
+  @@map("email_messages")
 }

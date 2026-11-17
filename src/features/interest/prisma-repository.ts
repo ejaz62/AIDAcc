@@ -34,8 +34,9 @@ export function createPrismaInterestRepository(db: PrismaClient): InterestReposi
           });
 
           let result: "created" | "updated" | "cooldown";
+          let id = existing?.id ?? "";
           if (!existing) {
-            await tx.interestRegistration.create({
+            id = (await tx.interestRegistration.create({
               data: {
                 fullName: data.fullName,
                 email: data.email,
@@ -45,7 +46,8 @@ export function createPrismaInterestRepository(db: PrismaClient): InterestReposi
                 consentAt: now,
                 lastSubmittedAt: now,
               },
-            });
+              select: { id: true },
+            })).id;
             result = "created";
           } else if (now.getTime() - existing.lastSubmittedAt.getTime() < cooldownMs) {
             // Rapid repeat from the same address: acknowledge without changing the record.
@@ -70,13 +72,14 @@ export function createPrismaInterestRepository(db: PrismaClient): InterestReposi
           await tx.submissionAttempt.create({
             data: { formToken, ipHash, outcome: result === "created" ? "accepted" : "duplicate" },
           });
-          return result;
+          return { result, id };
         });
       } catch (err) {
         if (isUniqueViolation(err, "formToken")) throw new DuplicateTokenError();
         if (isUniqueViolation(err, "email")) {
           // Two first-time submissions for one email raced; the other one won.
-          return "cooldown";
+          const winner = await db.interestRegistration.findUnique({ where: { email: data.email }, select: { id: true } });
+          return { result: "cooldown", id: winner?.id ?? "" };
         }
         throw err;
       }

@@ -8,6 +8,7 @@ import { DeleteForm, NoteForm, StatusForm } from "@/features/admin/registration-
 import { getRegistration, idSchema, learnerLabel, statusLabel } from "@/features/admin/registrations";
 import { requireAdmin } from "@/features/admin/session";
 import { formatDateTime, LoadingPanel, Panel, StatusBadge } from "@/features/admin/ui";
+import { KIND_LABELS, STATUS_LABELS } from "@/features/email/labels";
 
 export const metadata: Metadata = { title: "Registration" };
 
@@ -87,6 +88,22 @@ async function RegistrationDetail({ params }: { params: Promise<{ id: string }> 
         </div>
 
         <div className="space-y-6">
+          <Panel title="Emails">
+            {r.emails.length === 0 ? (
+              <p className="text-sm text-muted">No emails for this registration.</p>
+            ) : (
+              <ul className="space-y-2.5">
+                {r.emails.map((e) => (
+                  <li key={e.id} className="flex items-center justify-between gap-3 text-sm">
+                    <Link href={`/admin/emails/${e.id}`} className="min-w-0 truncate text-brand-700 underline underline-offset-2">
+                      {KIND_LABELS[e.kind] ?? e.kind}
+                    </Link>
+                    <StatusBadge status={STATUS_LABELS[e.status].tone} label={STATUS_LABELS[e.status].label} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
           <Panel title="Follow-up">
             <StatusForm id={r.id} status={r.status} />
           </Panel>

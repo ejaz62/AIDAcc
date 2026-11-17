@@ -115,12 +115,22 @@ Public pages read published content through cached functions (`src/features/cont
 content type; every admin change calls `updateTag`, so the next page regeneration shows it. Note that the
 **production build needs database access** (`DATABASE_URL`) because public pages are prerendered from published content.
 
+## Email
+
+- New registrations get a confirmation email restating that registering is **not** an admission application.
+- Staff choose under **My account**: instant alerts (name, type and programme only; no contact details),
+  a daily summary (counts only), or no emails.
+- Every email is stored first in an outbox (`email_messages`), delivered after the response is sent,
+  and retried by the daily job (up to 5 attempts). **Admin → Emails** shows each message's status and a preview.
+- Without `EMAIL_PROVIDER=resend` the site runs in **preview mode** and nothing is sent (see DEPLOYMENT.md).
+- Deleting a registration deletes its emails; email records are removed after 30 days.
+
 ## Security and operations
 
 - Security headers on every response: Content Security Policy (same-origin only), HSTS (production),
   X-Frame-Options DENY, nosniff, strict referrer and permissions policies; admin pages are `no-store`.
 - `GET /api/health` checks the database (for uptime monitors).
-- `GET /api/cron/cleanup` runs daily housekeeping when called with `Authorization: Bearer $CRON_SECRET`
+- `GET /api/cron/daily` runs daily housekeeping when called with `Authorization: Bearer $CRON_SECRET`
   (configured in `vercel.json`).
 - Search engines are blocked (`robots.txt` and meta tags) unless `ALLOW_SEARCH_INDEXING=true`.
 - `/sitemap.xml` lists public pages and published programmes; a branded social-sharing image is generated.

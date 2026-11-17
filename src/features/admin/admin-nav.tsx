@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { BookOpen, Building2, ClipboardList, LayoutDashboard, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
+import { BookOpen, Building2, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items: Array<{ label: string; href: string; icon: LucideIcon }> = [
@@ -12,6 +12,7 @@ const items: Array<{ label: string; href: string; icon: LucideIcon }> = [
   { label: "Programmes", href: "/admin/programmes", icon: BookOpen },
   { label: "Site details", href: "/admin/site", icon: Building2 },
   { label: "Staff", href: "/admin/staff", icon: Users },
+  { label: "Emails", href: "/admin/emails", icon: Mail },
   { label: "Audit log", href: "/admin/audit", icon: ScrollText },
 ];
 
