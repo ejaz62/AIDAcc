@@ -20,6 +20,16 @@ import { claudeCourses, disciplines, principles, solutions, tracks } from "@/con
 const DISCIPLINE_ICONS = [Bot, Code2, Rocket, MessageCircle, BriefcaseBusiness];
 const card = "rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-cyan-400/40";
 
+/** A photo beside a section heading, shown at its original 1376×768 proportions. */
+function SectionPhoto({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="scale-original relative aspect-[1376/768] w-full overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10">
+      <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+      <figcaption className="absolute right-3 bottom-2 text-[0.65rem] text-white/70">Illustrative image</figcaption>
+    </figure>
+  );
+}
+
 function Band({ id, children, tinted = false }: { id?: string; children: React.ReactNode; tinted?: boolean }) {
   return (
     <section id={id} className={tinted ? "border-y border-border bg-ink-50/60 py-20 sm:py-24" : "py-20 sm:py-24"}>
@@ -56,11 +66,14 @@ export function Disciplines() {
 export function Tracks() {
   return (
     <Band id="what-you-will-learn">
-      <SectionHeading
-        eyebrow="Core academy curriculum"
-        title="What you will learn"
-        lead="Practical, build-first skills. Rather than abstract theory or generic chatbots, you learn to build, launch and maintain AI systems that solve real problems for businesses."
-      />
+      <div className="grid items-center gap-10 lg:grid-cols-2">
+        <SectionHeading
+          eyebrow="Core academy curriculum"
+          title="What you will learn"
+          lead="Practical, build-first skills. Rather than abstract theory or generic chatbots, you learn to build, launch and maintain AI systems that solve real problems for businesses."
+        />
+        <SectionPhoto src="/images/workshop-ai-lab.webp" alt="Students in an AI agent workflows workshop, working together on laptops" />
+      </div>
       <ul className="mt-12 grid gap-6 lg:grid-cols-2">
         {tracks.map((t, i) => (
           <li key={t.title} className={`${card} flex flex-col p-7 sm:p-8`}>
@@ -219,11 +232,14 @@ export function ClaudeAcademy() {
 export function Principles() {
   return (
     <Band id="why-aida">
-      <SectionHeading
-        eyebrow="Our teaching approach"
-        title="Why learn with AIDA?"
-        lead="Designed to remove intimidation and focus on practical results — grounded in tools you can actually use."
-      />
+      <div className="grid items-center gap-10 lg:grid-cols-2">
+        <SectionHeading
+          eyebrow="Our teaching approach"
+          title="Why learn with AIDA?"
+          lead="Designed to remove intimidation and focus on practical results — grounded in tools you can actually use."
+        />
+        <SectionPhoto src="/images/learning-workspace.webp" alt="Students learning to build with AI on laptops at shared tables" />
+      </div>
       <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {principles.map((p, i) => (
           <li key={p.title} className={card}>
