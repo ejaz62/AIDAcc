@@ -19,9 +19,19 @@ import { createAdminUser, newAdminSchema, resetAdminPassword } from "../src/feat
 
 config({ path: [".env.local", ".env"], quiet: true });
 
+/**
+ * Value of a --flag. Joins the following words until the next flag, because some
+ * shells (e.g. PowerShell → npm.cmd) drop quotes, splitting "Ada Lovelace" in two.
+ */
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
-  return i > -1 ? process.argv[i + 1] : undefined;
+  if (i < 0) return undefined;
+  const words: string[] = [];
+  for (const w of process.argv.slice(i + 1)) {
+    if (w.startsWith("--")) break;
+    words.push(w);
+  }
+  return words.length ? words.join(" ") : undefined;
 }
 
 async function ask(question: string, hidden = false): Promise<string> {
