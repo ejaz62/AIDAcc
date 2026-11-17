@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { BellRing, LogOut } from "lucide-react";
+import { BellRing, Globe, LogOut } from "lucide-react";
 import { getDb } from "@/lib/db";
 import { countUnseenAdmissions } from "@/features/admission/admin";
 import { Logo } from "@/components/ui/logo";
@@ -71,6 +71,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Link>
         <AdminSidebarNav />
         <div className="mt-auto">
+          <Link
+            href="/"
+            className="mb-3 flex items-center gap-3 rounded-(--radius-control) border border-white/10 px-3 py-2.5 text-sm font-medium text-ink-200 transition-colors hover:bg-white/5 hover:text-white"
+          >
+            <Globe className="size-4.5" aria-hidden />
+            View website
+          </Link>
           <Suspense fallback={null}>
             <CurrentUser />
           </Suspense>
@@ -83,6 +90,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Logo inverse />
         </Link>
         <div className="flex items-center gap-1">
+          <Link
+            href="/"
+            aria-label="View website"
+            title="View website"
+            className="inline-flex size-10 items-center justify-center rounded-(--radius-control) text-ink-300 hover:bg-white/5 hover:text-white"
+          >
+            <Globe className="size-5" aria-hidden />
+          </Link>
           <Suspense fallback={null}>
             <CurrentUser compact />
           </Suspense>
