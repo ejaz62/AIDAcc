@@ -172,3 +172,15 @@
   .knowledge-prose th, .knowledge-prose td { border: 1px solid var(--color-border); padding: 0.65rem 0.9rem; }
   .knowledge-prose blockquote { border-left: 4px solid var(--color-brand-400); padding-left: 1rem; color: var(--color-ink-600); }
 }
+
+/* Gentle floating motion for hero cards (disabled for reduced-motion users). */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@utility animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

@@ -53,3 +53,6 @@ folderico-*.ico
 
 # Original knowledge-base document (the Markdown files in knowledge/aida are the source of truth)
 knowledge/source/*.docx
+
+# Photos supplied by the owner before they are optimised into public/images
+photos for AIDA/

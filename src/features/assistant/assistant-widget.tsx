@@ -100,6 +100,21 @@ export function AssistantWidget() {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, pending, open]);
 
+  // Keep the launcher just below the site header (which moves when the preview banner scrolls away).
+  useEffect(() => {
+    const place = () => {
+      const bottom = document.querySelector("header")?.getBoundingClientRect().bottom ?? 64;
+      document.documentElement.style.setProperty("--aida-top", `${Math.max(bottom, 0) + 12}px`);
+    };
+    place();
+    window.addEventListener("scroll", place, { passive: true });
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", place);
+      window.removeEventListener("resize", place);
+    };
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     inputRef.current?.focus();
@@ -167,7 +182,7 @@ export function AssistantWidget() {
         aria-controls="aida-assistant"
         aria-label={open ? "Close Ask AIDA assistant" : "Open Ask AIDA assistant"}
         className={cn(
-          "fixed right-4 bottom-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:bottom-6 sm:pr-5",
+          "fixed top-(--aida-top,5rem) right-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:pr-5",
           open && "hidden sm:flex",
         )}
       >
@@ -192,7 +207,7 @@ export function AssistantWidget() {
           id="aida-assistant"
           role="dialog"
           aria-label="Ask AIDA assistant"
-          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:right-6 sm:bottom-28 sm:h-[min(620px,calc(100dvh-9rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
+          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:top-[calc(var(--aida-top,5rem)+4.75rem)] sm:right-6 sm:h-[min(620px,calc(100dvh-var(--aida-top,5rem)-6rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
         >
           <header className="flex items-center justify-between gap-3 bg-gradient-to-r from-ink-950 to-brand-950 px-4 py-3 text-white">
             <div className="flex items-center gap-3">

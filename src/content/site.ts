@@ -50,8 +50,8 @@ export const notAnApplication = {
 
 export const hero = {
   eyebrow: "Artificial Intelligence Digital Academy",
-  title: "Learn to understand, use and build with",
-  highlight: "artificial intelligence.",
+  title: "Master practical AI in",
+  highlight: "just 10 days.",
   lead: "Join the AIDA AI Training Programme: 10 days of live, instructor-led online classes for complete beginners — no coding needed. Learn Claude and AI tools, build websites with AI and create AI agents.",
   primaryCta: { label: "View the programme", href: "/programme" },
   secondaryCta: { label: "Fees & Admission", href: "/fees-admission" },
