@@ -22,7 +22,8 @@
     "supabase": "tsx scripts/with-supabase.ts",
     "use-db": "tsx scripts/use-database.ts",
     "db:seed-faq": "tsx scripts/seed-faq.ts",
-    "kb:seed": "tsx scripts/seed-knowledge.ts"
+    "kb:seed": "tsx scripts/seed-knowledge.ts",
+    "kb:update": "tsx scripts/update-knowledge-section.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.9.0",

@@ -62,7 +62,7 @@ export const about = {
   eyebrow: "About AIDA",
   title: "An academy built around artificial intelligence",
   lead: "Artificial intelligence is changing how we learn, work and create. AIDA exists to make AI education clear, practical and accessible.",
-  placeholder: true,
+  placeholder: false,
 } as const;
 
 export const pillars = [

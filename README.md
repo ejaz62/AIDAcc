@@ -136,6 +136,8 @@ title, short answer or full content → describe the change → Save. The websit
 `/programme`, `/curriculum`, `/fees-admission`, `/contact`) and Ask AIDA update immediately. Every save is kept in
 the section's **version history** with a **Restore** button, so verified information is never lost. To make a
 change permanent in the repository too, edit the matching `knowledge/aida/*.md` file and commit it.
+To publish an edited file to the database, run `npm run kb:update -- <key>` (e.g. `founder`); the
+previous version stays in the history.
 
 ## Ask AIDA assistant and FAQ
 

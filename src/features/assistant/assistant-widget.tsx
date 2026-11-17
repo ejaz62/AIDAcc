@@ -14,7 +14,7 @@ interface Message {
 
 const STORAGE_KEY = "aida-assistant";
 export const OPEN_ASSISTANT_EVENT = "aida:open-assistant";
-export const ASSISTANT_AVATAR = "/images/ask-aida-assistant.svg";
+export const ASSISTANT_AVATAR = "/images/ask-aida-avatar.webp";
 
 const SUGGESTIONS = ["What is the course fee?", "Class timings kya hain?", "Do I need a laptop?", "Refund policy kya hai?"];
 

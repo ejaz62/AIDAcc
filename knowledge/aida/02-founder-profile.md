@@ -3,10 +3,22 @@ key: founder
 title: Founder Profile
 order: 2
 page: /founder
-summary: The founder profile has not been published yet. For information about AIDA's founder, please contact AIDA Reception.
-summary_roman: Founder profile abhi shaya nahi hua. AIDA ke founder ke baare mein maloomat ke liye AIDA Reception se rabta karein.
-summary_urdu: بانی کا تعارف ابھی شائع نہیں ہوا۔ AIDA کے بانی کے بارے میں معلومات کے لیے AIDA ریسپشن سے رابطہ کریں۔
+summary: AIDA was founded by Muhammad Ejaz, based in Lahore, Pakistan. He has completed all 10 Anthropic Claude Academy certifications. His aim is to make modern AI education accessible and practical for everyone. Contact: +92 322 7204898, mentorsvalley@gmail.com.
+summary_roman: AIDA ke founder Muhammad Ejaz hain, jo Lahore, Pakistan mein hain. Unhon ne Anthropic Claude Academy ki tamam 10 certifications mukammal ki hain. Un ka maqsad jadeed AI taleem ko har kisi ke liye aasaan aur practical banana hai. Rabta: +92 322 7204898, mentorsvalley@gmail.com.
+summary_urdu: AIDA کے بانی محمد اعجاز (Muhammad Ejaz) ہیں، جو لاہور، پاکستان میں مقیم ہیں۔ انہوں نے Anthropic Claude Academy کی تمام 10 سرٹیفیکیشنز مکمل کی ہیں۔ ان کا مقصد جدید AI تعلیم کو ہر کسی کے لیے آسان اور عملی بنانا ہے۔ رابطہ: +92 322 7204898، mentorsvalley@gmail.com
 ---
-The founder profile will be published here soon.
+## Founder commitment
 
-For information in the meantime, please contact **AIDA Reception** (see the Contact page).
+> “My commitment at AIDA is to make modern artificial intelligence education accessible, practical, and grounded for everyone. Rather than focusing on abstract theory or superficial chatbot tricks, we equip beginners and digital builders with real, functional capabilities—from creating intelligent AI agents and automated WhatsApp employees to delivering dependable web solutions for business clients.”
+>
+> — Muhammad Ejaz, Founder
+
+## Verified learning credentials
+
+- Completed all **10 Anthropic Claude Academy certifications**.
+
+## Contact details
+
+- **Location:** Lahore, Pakistan
+- **Email:** mentorsvalley@gmail.com
+- **Mobile:** +92 322 7204898

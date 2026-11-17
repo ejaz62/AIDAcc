@@ -83,7 +83,7 @@ describe("questions in English, Roman Urdu and Urdu", () => {
     ["رابطہ نمبر", "+92 322 720 4898"],
     ["Are recordings available?", "recordings"],
     ["Are there any discounts?", "discount"],
-    ["Who is the founder?", "founder"],
+    ["Who is the founder?", "Muhammad Ejaz"],
   ];
   it.each(cases)("%s", (q, expected) => {
     expect(ask(q).toLowerCase()).toContain(expected.toLowerCase());

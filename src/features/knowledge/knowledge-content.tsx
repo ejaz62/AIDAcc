@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -91,5 +92,18 @@ export function KnowledgeHelp() {
         </div>
       </Container>
     </section>
+  );
+}
+
+/** A wide illustrative image shown between a page header and its content. */
+export function PageBanner({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="pt-16 sm:pt-20">
+      <Container className="max-w-4xl">
+        <div className="relative aspect-[16/8] overflow-hidden rounded-(--radius-card) shadow-lg ring-1 ring-black/5">
+          <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 896px, 100vw" className="object-cover" />
+        </div>
+      </Container>
+    </div>
   );
 }
