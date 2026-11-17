@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { RotateCcw, Send, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { WELCOME } from "./offline";
@@ -17,7 +23,12 @@ export const OPEN_ASSISTANT_EVENT = "aida:open-assistant";
 export const ASSISTANT_AVATAR = "/images/ask-aida-avatar.webp";
 export const ASSISTANT_IMAGE = "/images/ask-aida-full.webp";
 
-const SUGGESTIONS = ["What is the course fee?", "Class timings kya hain?", "Do I need a laptop?", "Refund policy kya hai?"];
+const SUGGESTIONS = [
+  "What is the course fee?",
+  "Class timings kya hain?",
+  "Do I need a laptop?",
+  "Refund policy kya hai?",
+];
 
 const GREETING: Message = { role: "assistant", content: WELCOME };
 
@@ -34,14 +45,19 @@ function Avatar({ size, className }: { size: number; className?: string }) {
   );
 }
 
-function loadSaved(): { conversationId: string | null; messages: Message[] } | null {
+function loadSaved(): {
+  conversationId: string | null;
+  messages: Message[];
+} | null {
   if (typeof window === "undefined") return null;
   try {
     const data = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "null") as {
       conversationId: string | null;
       messages: Message[];
     } | null;
-    return data && Array.isArray(data.messages) && data.messages.length ? data : null;
+    return data && Array.isArray(data.messages) && data.messages.length
+      ? data
+      : null;
   } catch {
     return null;
   }
@@ -54,7 +70,11 @@ function linkify(text: string): ReactNode[] {
   );
   return parts.map((part, i) =>
     i % 2 === 1 ? (
-      <Link key={i} href={part} className="font-semibold text-brand-700 underline underline-offset-2">
+      <Link
+        key={i}
+        href={part}
+        className="font-semibold text-brand-700 underline underline-offset-2"
+      >
         {part}
       </Link>
     ) : (
@@ -68,8 +88,12 @@ export function AssistantWidget() {
   // Restore this browser tab's conversation, so it continues across pages. The panel is
   // closed on first render, so restored messages never affect server-rendered markup.
   const [saved] = useState(loadSaved);
-  const [messages, setMessages] = useState<Message[]>(saved?.messages ?? [GREETING]);
-  const [conversationId, setConversationId] = useState<string | null>(saved?.conversationId ?? null);
+  const [messages, setMessages] = useState<Message[]>(
+    saved?.messages ?? [GREETING],
+  );
+  const [conversationId, setConversationId] = useState<string | null>(
+    saved?.conversationId ?? null,
+  );
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +106,8 @@ export function AssistantWidget() {
   useEffect(() => {
     const openHandler = (e: Event) => {
       setOpen(true);
-      const question = (e as CustomEvent<{ question?: string }>).detail?.question;
+      const question = (e as CustomEvent<{ question?: string }>).detail
+        ?.question;
       if (question) setTimeout(() => sendRef.current(question), 0);
     };
     window.addEventListener(OPEN_ASSISTANT_EVENT, openHandler);
@@ -91,21 +116,31 @@ export function AssistantWidget() {
 
   useEffect(() => {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ conversationId, messages }));
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ conversationId, messages }),
+      );
     } catch {
       /* storage unavailable */
     }
   }, [conversationId, messages]);
 
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, pending, open]);
 
   // Keep the launcher just below the site header (which moves when the preview banner scrolls away).
   useEffect(() => {
     const place = () => {
-      const bottom = document.querySelector("header")?.getBoundingClientRect().bottom ?? 64;
-      document.documentElement.style.setProperty("--aida-top", `${Math.max(bottom, 0) + 12}px`);
+      const bottom =
+        document.querySelector("header")?.getBoundingClientRect().bottom ?? 64;
+      document.documentElement.style.setProperty(
+        "--aida-top",
+        `${Math.max(bottom, 0) + 12}px`,
+      );
     };
     place();
     window.addEventListener("scroll", place, { passive: true });
@@ -143,12 +178,23 @@ export function AssistantWidget() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ conversationId, message }),
         });
-        const data = (await res.json().catch(() => ({}))) as { reply?: string; conversationId?: string; error?: string };
-        if (!res.ok || !data.reply) throw new Error(data.error || "The assistant is temporarily unavailable.");
+        const data = (await res.json().catch(() => ({}))) as {
+          reply?: string;
+          conversationId?: string;
+          error?: string;
+        };
+        if (!res.ok || !data.reply)
+          throw new Error(
+            data.error || "The assistant is temporarily unavailable.",
+          );
         setConversationId(data.conversationId ?? null);
         setMessages((m) => [...m, { role: "assistant", content: data.reply! }]);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong. Please try again.",
+        );
       } finally {
         setPending(false);
         inputRef.current?.focus();
@@ -181,7 +227,9 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="aida-assistant"
-        aria-label={open ? "Close Ask AIDA assistant" : "Open Ask AIDA assistant"}
+        aria-label={
+          open ? "Close Ask AIDA assistant" : "Open Ask AIDA assistant"
+        }
         className={cn(
           "scale-original fixed top-(--aida-top,6.5rem) right-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:pr-5",
           open && "hidden",
@@ -189,11 +237,16 @@ export function AssistantWidget() {
       >
         <span className="relative">
           <Avatar size={52} className="ring-2 ring-white/80" />
-          <span className="absolute right-0 bottom-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400" aria-hidden />
+          <span
+            className="absolute right-0 bottom-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400"
+            aria-hidden
+          />
         </span>
         <span className="hidden text-left leading-tight sm:block" aria-hidden>
           <span className="block font-display font-bold">Ask AIDA</span>
-          <span className="block text-xs text-ink-300">Questions? I can help</span>
+          <span className="block text-xs text-ink-300">
+            Questions? I can help
+          </span>
         </span>
       </button>
 
@@ -205,11 +258,26 @@ export function AssistantWidget() {
           className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:top-(--aida-top,6.5rem) sm:right-6 sm:h-[min(680px,calc(100dvh-var(--aida-top,6.5rem)-1.5rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
         >
           <header className="scale-original flex items-center justify-between gap-3 bg-gradient-to-r from-ink-950 to-brand-950 px-4 py-3 text-white">
-            <div>
-              <p className="font-display font-bold">Ask AIDA</p>
-              <p className="flex items-center gap-1.5 text-xs text-ink-300">
-                <span className="size-2 rounded-full bg-emerald-400" aria-hidden /> AIDA&apos;s virtual assistant · Online
-              </p>
+            <div className="flex items-center gap-3">
+              <Image
+                src={ASSISTANT_IMAGE}
+                alt="Ask AIDA, the academy's virtual assistant"
+                width={447}
+                height={420}
+                unoptimized
+                priority
+                className="h-14 w-auto shrink-0 rounded-lg ring-1 ring-white/20"
+              />
+              <div>
+                <p className="font-display font-bold">Ask AIDA</p>
+                <p className="flex items-center gap-1.5 text-xs text-ink-300">
+                  <span
+                    className="size-2 rounded-full bg-emerald-400"
+                    aria-hidden
+                  />{" "}
+                  AIDA&apos;s virtual assistant · Online
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -220,7 +288,6 @@ export function AssistantWidget() {
                 title="New chat"
               >
                 <RotateCcw className="size-4" aria-hidden />
-                <span className="hidden sm:inline">New chat</span>
               </button>
               <button
                 type="button"
@@ -233,21 +300,19 @@ export function AssistantWidget() {
             </div>
           </header>
 
-          <div className="scale-original shrink-0 border-b border-white/10 bg-ink-950">
-            <Image
-              src={ASSISTANT_IMAGE}
-              alt="Ask AIDA, the academy's virtual assistant"
-              width={447}
-              height={420}
-              unoptimized
-              priority
-              className="mx-auto h-40 w-auto sm:h-48"
-            />
-          </div>
-
-          <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-ink-50 p-4" aria-live="polite">
+          <div
+            ref={listRef}
+            className="flex-1 space-y-3 overflow-y-auto bg-ink-50 p-4"
+            aria-live="polite"
+          >
             {messages.map((m, i) => (
-              <div key={i} className={cn("flex items-end gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
+              <div
+                key={i}
+                className={cn(
+                  "flex items-end gap-2",
+                  m.role === "user" ? "justify-end" : "justify-start",
+                )}
+              >
                 <p
                   dir="auto"
                   className={cn(
@@ -257,7 +322,9 @@ export function AssistantWidget() {
                       : "rounded-bl-md border border-border bg-surface text-ink-800",
                   )}
                 >
-                  <span className="sr-only">{m.role === "user" ? "You: " : "Ask AIDA: "}</span>
+                  <span className="sr-only">
+                    {m.role === "user" ? "You: " : "Ask AIDA: "}
+                  </span>
                   {m.role === "assistant" ? linkify(m.content) : m.content}
                 </p>
               </div>
@@ -279,7 +346,9 @@ export function AssistantWidget() {
             )}
             {messages.length === 1 && !pending && (
               <div className="pt-1">
-                <p className="mb-2 text-xs font-semibold tracking-wide text-ink-500 uppercase">Popular questions</p>
+                <p className="mb-2 text-xs font-semibold tracking-wide text-ink-500 uppercase">
+                  Popular questions
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map((s) => (
                     <button
@@ -304,7 +373,10 @@ export function AssistantWidget() {
             className="border-t border-border bg-surface p-3"
           >
             {error && (
-              <p role="alert" className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
+              <p
+                role="alert"
+                className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700"
+              >
                 {error}
               </p>
             )}
@@ -358,7 +430,11 @@ export function OpenAssistantButton({
     <button
       type="button"
       className={className}
-      onClick={() => window.dispatchEvent(new CustomEvent(OPEN_ASSISTANT_EVENT, { detail: { question } }))}
+      onClick={() =>
+        window.dispatchEvent(
+          new CustomEvent(OPEN_ASSISTANT_EVENT, { detail: { question } }),
+        )
+      }
     >
       {children}
     </button>
