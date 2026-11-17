@@ -5,7 +5,7 @@ import { Logo } from "@/components/ui/logo";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-white/10 bg-ink-950 text-ink-400">
+    <footer className="scale-original border-t border-white/10 bg-ink-950 text-ink-400">
       <Container className="py-14">
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div className="max-w-sm">

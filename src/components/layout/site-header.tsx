@@ -13,7 +13,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-border/70">
       {/* Blur lives on a sibling layer: backdrop-filter on the header itself would trap the
           fixed-position mobile menu inside the header's box. */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-white/80 backdrop-blur-xl" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-background/85 backdrop-blur-xl" />
       <Container className="flex h-16 items-center justify-between gap-6">
         <Link href="/" aria-label={`${site.name} home`} className="shrink-0 rounded-md">
           <Logo />

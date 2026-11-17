@@ -17,7 +17,7 @@ export function Approach() {
           />
           {approach.steps.map((step, i) => (
             <li key={step.title} className="relative flex flex-col items-center text-center">
-              <span className="relative z-10 flex size-12 items-center justify-center rounded-full bg-ink-950 font-display text-base font-bold text-white ring-8 ring-surface">
+              <span className="relative z-10 flex size-12 items-center justify-center rounded-full bg-brand-600 font-display text-base font-bold text-on-brand ring-8 ring-background">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-5 text-lg font-bold text-ink-950">{step.title}</h3>

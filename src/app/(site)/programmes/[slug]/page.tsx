@@ -64,7 +64,7 @@ async function ProgrammeDetail({ params }: Props) {
 export default function ProgrammePage(props: Props) {
   return (
     <>
-      <Suspense fallback={<div className="min-h-[60vh] bg-ink-950" aria-hidden />}>
+      <Suspense fallback={<div className="min-h-[60vh] bg-background" aria-hidden />}>
         <ProgrammeDetail {...props} />
       </Suspense>
       <ContactCta />

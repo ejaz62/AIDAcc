@@ -8,7 +8,7 @@ export function ContactCta() {
   return (
     <section className="py-20 sm:py-28">
       <Container>
-        <div className="relative isolate overflow-hidden rounded-[1.75rem] bg-ink-950 px-6 py-16 text-center sm:px-16 sm:py-20">
+        <div className="scale-original relative isolate overflow-hidden rounded-[1.75rem] border border-white/10 bg-ink-950 px-6 py-16 text-center sm:px-16 sm:py-20">
           <div className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
           <div className="absolute -bottom-32 left-1/2 -z-10 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-accent-500/25 blur-3xl" />
           <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-white/10 text-accent-300 ring-1 ring-white/15">

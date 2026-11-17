@@ -54,7 +54,7 @@ export async function Programmes() {
           <>
             <SectionHeading eyebrow={programmes.eyebrow} title={programmes.title} lead={programmes.lead} />
             <div className="mt-14 grid gap-6 lg:grid-cols-5">
-              <div className="flex flex-col justify-between rounded-(--radius-card) bg-gradient-to-br from-brand-700 to-brand-950 p-8 text-white shadow-(--shadow-lift) lg:col-span-2">
+              <div className="scale-original flex flex-col justify-between rounded-(--radius-card) bg-gradient-to-br from-brand-700 to-brand-950 p-8 text-white shadow-(--shadow-lift) lg:col-span-2">
                 <div>
                   <span className="flex size-12 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">
                     <CalendarClock className="size-6" aria-hidden />

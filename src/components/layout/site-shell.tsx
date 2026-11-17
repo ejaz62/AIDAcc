@@ -13,10 +13,10 @@ async function AssistantIfEnabled() {
 /** Public website chrome: skip link, preview notice, header, footer and the Ask AIDA assistant. */
 export function SiteShell({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="site-dark flex min-h-screen flex-col">
       <a
         href="#main"
-        className="sr-only z-[60] rounded-md bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+        className="sr-only z-[60] rounded-md bg-brand-600 px-4 py-2 text-on-brand focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
       >
         Skip to content
       </a>
@@ -27,6 +27,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
       </main>
       <SiteFooter />
       <AssistantIfEnabled />
-    </>
+    </div>
   );
 }

@@ -76,7 +76,7 @@ export function KnowledgeHelp() {
   return (
     <section className="pb-20 sm:pb-24">
       <Container className="max-w-4xl">
-        <div className="flex flex-col gap-6 rounded-(--radius-card) bg-ink-950 p-8 text-white sm:flex-row sm:items-center sm:justify-between sm:p-10">
+        <div className="scale-original flex flex-col gap-6 rounded-(--radius-card) border border-white/10 bg-ink-950 p-8 text-white sm:flex-row sm:items-center sm:justify-between sm:p-10">
           <div>
             <h2 className="text-2xl font-bold">Still have a question?</h2>
             <p className="mt-2 text-ink-300">Ask our assistant in English, Urdu or Roman Urdu, or contact AIDA Reception.</p>

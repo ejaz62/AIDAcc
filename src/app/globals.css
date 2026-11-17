@@ -184,3 +184,81 @@
     animation: none;
   }
 }
+
+/*
+ * Public website theme: deep navy with cyan accents.
+ * The admin area keeps the light theme. Utilities read these variables, so
+ * remapping them here restyles every public page from one place.
+ */
+@theme {
+  --color-on-brand: #ffffff;
+  --color-night: #020617;
+}
+
+.site-dark {
+  color-scheme: dark;
+  --color-ink-50: #0b1224;
+  --color-ink-100: #111a2e;
+  --color-ink-200: #1e293b;
+  --color-ink-300: #334155;
+  --color-ink-400: #64748b;
+  --color-ink-500: #94a3b8;
+  --color-ink-600: #a9b4c6;
+  --color-ink-700: #cbd5e1;
+  --color-ink-800: #e2e8f0;
+  --color-ink-900: #f1f5f9;
+  --color-ink-950: #ffffff;
+  --color-brand-50: #082f3d;
+  --color-brand-100: #0e4a5c;
+  --color-brand-200: #155e75;
+  --color-brand-300: #67e8f9;
+  --color-brand-400: #22d3ee;
+  --color-brand-500: #22d3ee;
+  --color-brand-600: #22d3ee;
+  --color-brand-700: #67e8f9;
+  --color-brand-800: #a5f3fc;
+  --color-brand-900: #cffafe;
+  --color-brand-950: #ecfeff;
+  --color-on-brand: #020617;
+  --color-background: #020617;
+  --color-surface: #0f172a;
+  --color-foreground: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-border: #1e293b;
+  --color-ring: #22d3ee;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 40px -16px rgb(34 211 238 / 0.25);
+  --shadow-glow: 0 0 0 1px rgb(34 211 238 / 0.35), 0 12px 40px -8px rgb(34 211 238 / 0.45);
+  background-color: var(--color-background);
+  color: var(--color-ink-700);
+}
+
+/* Bands that were designed dark keep the original palette inside the dark site. */
+.site-dark .scale-original {
+  color-scheme: dark;
+  --color-ink-50: #f7f8fb;
+  --color-ink-100: #eef0f6;
+  --color-ink-200: #dde1ec;
+  --color-ink-300: #c2c8d8;
+  --color-ink-400: #8e96ae;
+  --color-ink-500: #646c86;
+  --color-ink-600: #4a5169;
+  --color-ink-700: #363c52;
+  --color-ink-800: #23283a;
+  --color-ink-900: #151927;
+  --color-ink-950: #0b0e19;
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #e1e8ff;
+  --color-brand-200: #c4d1ff;
+  --color-brand-300: #9db1ff;
+  --color-brand-400: #7086ff;
+  --color-brand-500: #4c5efa;
+  --color-brand-600: #3a43ee;
+  --color-brand-700: #2f33d2;
+  --color-brand-800: #292da9;
+  --color-brand-900: #282e85;
+  --color-brand-950: #181a4d;
+  --color-on-brand: #ffffff;
+  --color-surface: #ffffff;
+  --color-border: #dde1ec;
+}

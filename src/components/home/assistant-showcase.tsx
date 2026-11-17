@@ -11,7 +11,7 @@ export function AssistantShowcase() {
   return (
     <section className="py-20 sm:py-28" aria-labelledby="ask-aida-heading">
       <Container>
-        <div className="relative isolate grid items-center overflow-hidden rounded-[1.75rem] bg-ink-950 text-white lg:grid-cols-2">
+        <div className="scale-original relative isolate grid items-center overflow-hidden rounded-[1.75rem] border border-white/10 bg-ink-950 text-white lg:grid-cols-2">
           <div className="bg-grid absolute inset-0 -z-10 opacity-50 [mask-image:radial-gradient(ellipse_at_left,black_20%,transparent_70%)]" />
           <div className="px-6 py-14 sm:px-12 lg:py-16">
             <p className="flex items-center gap-2 text-sm font-semibold tracking-wide text-accent-300 uppercase">

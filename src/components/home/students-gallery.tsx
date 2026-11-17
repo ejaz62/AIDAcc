@@ -30,7 +30,7 @@ export function StudentsGallery() {
             <li key={p.src} className={cn("large" in p && "col-span-2 lg:row-span-2")}>
               <figure
                 className={cn(
-                  "group relative h-full overflow-hidden rounded-(--radius-card) shadow-lg ring-1 ring-black/5",
+                  "scale-original group relative h-full overflow-hidden rounded-(--radius-card) shadow-lg ring-1 ring-black/5",
                   "large" in p ? "aspect-[16/10] lg:aspect-auto" : "aspect-[4/5]",
                 )}
               >
