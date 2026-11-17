@@ -118,11 +118,36 @@ Public pages read published content through cached functions (`src/features/cont
 content type; every admin change calls `updateTag`, so the next page regeneration shows it. Note that the
 **production build needs database access** (`DATABASE_URL`) because public pages are prerendered from published content.
 
+## AIDA knowledge base
+
+The verified AIDA information (13 sections: About AIDA, Founder Profile, AI Training Programme, Duration and
+Schedule, Curriculum, Fees and Payment, Admission, Requirements, Student Support, Certificates, Refund Policy,
+FAQs, Contact and Reception) lives in two places:
+
+- **`knowledge/aida/*.md`** — the version-controlled source (one file per section: front matter `key`, `title`,
+  `order`, `page`, `summary` = the assistant's short answer; then the full Markdown body). The original document
+  is kept in `knowledge/source/`.
+- **Database tables `knowledge_sections` and `knowledge_revisions`** — the live copy. `npm run kb:seed` copies
+  the files in **only for sections that don't exist yet** (it never overwrites staff edits) and adds the FAQ
+  questions from section 12 as published FAQ entries (skipping existing questions).
+
+**To update information (no code changes):** sign in → **Admin → Knowledge base** → choose a section → edit the
+title, short answer or full content → describe the change → Save. The website pages (`/about`, `/founder`,
+`/programme`, `/curriculum`, `/fees-admission`, `/contact`) and Ask AIDA update immediately. Every save is kept in
+the section's **version history** with a **Restore** button, so verified information is never lost. To make a
+change permanent in the repository too, edit the matching `knowledge/aida/*.md` file and commit it.
+
 ## Ask AIDA assistant and FAQ
 
-- **Ask AIDA** (floating button on every public page, plus homepage and FAQ entry points) answers visitors'
-  questions using **only published content**: programmes, site details and FAQ entries. It never invents fees,
-  dates or programmes, and restates that registering interest is not an application.
+- **Ask AIDA** (floating assistant with the AIDA avatar `public/images/ask-aida-assistant.svg`, bottom-right on
+  every public page; the chat is kept while moving between pages, with New chat and Close controls) answers
+  visitors' questions using **only the knowledge base and published content**. It never invents fees, dates or
+  programmes.
+- Greetings in English, Urdu and Roman Urdu (Assalam-o-Alaikum, Salam, Hi, Good morning, السلام علیکم …) always
+  get: "Aslamoalikum! Welcome to AIDA. How can I help you today?"
+- **FAQ mode** (`src/features/assistant/offline.ts`) matches questions by meaning — synonyms, spelling variants,
+  Roman Urdu and Urdu keywords — to a knowledge-base section's short answer plus a page link, or to a published
+  FAQ entry. If nothing matches it says so and gives AIDA Reception's details.
 - **AI mode** (`ANTHROPIC_API_KEY` set): Claude (`claude-opus-5-5`, low effort, prompt-cached knowledge,
   server-side refusal fallback). **FAQ mode** (no key, or if the AI provider is unavailable): answers from matching
   FAQ entries, otherwise honest guidance. Either way the assistant always works.

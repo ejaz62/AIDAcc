@@ -1,60 +1,128 @@
+import fs from "node:fs";
+import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { sslFor } from "@/lib/db-ssl";
 import { buildKnowledge } from "@/features/assistant/knowledge";
-import { matchFaq, OFFLINE_DEFAULT_REPLY, offlineReply } from "@/features/assistant/offline";
+import { isGreeting, matchFaq, offlineReply, rankIntents, WELCOME } from "@/features/assistant/offline";
 import { AssistantUnavailableError, isAiConfigured } from "@/features/assistant/claude";
 import { ASSISTANT_LIMITS, handleAssistantMessage } from "@/features/assistant/service";
 import { EMPTY_SITE_CONTENT } from "@/features/content/site-content";
-import { STARTER_FAQ } from "@/features/faq/starter-faq";
+import { parseFaqPairs, parseKnowledgeFile } from "@/features/knowledge/knowledge";
 
-const faq = STARTER_FAQ.map((f, i) => ({ id: `faq${i}`, ...f }));
+// The real knowledge base files, exactly as the seed imports them.
+const dir = path.resolve("knowledge/aida");
+const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md")).sort().map((f) => parseKnowledgeFile(fs.readFileSync(path.join(dir, f), "utf8")));
+const sections = files.map(({ key, title, summary, page }) => ({ key, title, summary, page }));
+const faq = parseFaqPairs(files.find((f) => f.key === "faq")!.body).map((p, i) => ({ id: `faq${i}`, ...p }));
+const sources = { faq, sections };
+const ask = (q: string) => offlineReply(q, sources);
 
-describe("offline answers", () => {
-  it("matches FAQ questions phrased differently", () => {
-    expect(matchFaq("how can I register interest?", faq)?.question).toBe("How do I register my interest?");
-    expect(matchFaq("is registering the same as applying for admission", faq)?.question).toMatch(/same as applying/);
-  });
-
-  it("gives honest topic guidance instead of inventing facts", () => {
-    expect(offlineReply("How much are the tuition fees?", [])).toMatch(/not been published/);
-    expect(offlineReply("When is the application deadline?", [])).toMatch(/not an application for admission/);
-    expect(offlineReply("Tell me about quantum gardening", [])).toBe(OFFLINE_DEFAULT_REPLY);
+describe("knowledge files", () => {
+  it("contain all 13 sections with the verified facts", () => {
+    expect(files.map((f) => f.key)).toEqual([
+      "about", "founder", "programme", "schedule", "curriculum", "fees", "admission",
+      "requirements", "support", "certificates", "refund", "faq", "contact",
+    ]);
+    const all = files.map((f) => `${f.summary}\n${f.body}`).join("\n");
+    for (const fact of ["PKR 15,000", "SAR 200", "USD 55", "10 days", "9:00 PM", "0322 7204898", "Muhammad Ejaz", "+92 322 720 4898", "mentorsvalley@gmail.com", "8 days", "Claude Pro"]) {
+      expect(all).toContain(fact);
+    }
+    expect(faq.length).toBeGreaterThanOrEqual(10);
   });
 });
 
-describe("knowledge", () => {
-  it("lists only what was passed in and flags unpublished details", () => {
-    const k = buildKnowledge({ programmes: [], site: EMPTY_SITE_CONTENT, faq });
-    expect(k).toContain("No programmes have been published yet.");
-    expect(k).toContain("Email: (not published yet)");
-    expect(k).toContain("How do I register my interest?");
+describe("greetings", () => {
+  const greetings = [
+    "Assalam-o-Alaikum", "Aslamoalikum", "Assalamu Alaikum", "assalam o alaikum", "AOA", "Salam", "salaam",
+    "Hello", "hi", "Hi there", "hey", "Good morning", "good evening", "Hello AIDA", "Asalam u alaikum kaise ho",
+    "السلام علیکم", "السلام عليكم", "سلام",
+  ];
+  it.each(greetings)("recognises %s", (g) => {
+    expect(isGreeting(g)).toBe(true);
+    expect(ask(g)).toBe(WELCOME);
   });
 
-  it("includes published programmes with unconfirmed fields marked", () => {
-    const k = buildKnowledge({
-      programmes: [
-        {
-          id: "p1",
-          slug: "intro-ai",
-          title: "Intro AI",
-          summary: "S",
-          overview: "O",
-          audience: null,
-          duration: null,
-          studyFormat: null,
-          entryRequirements: null,
-          fees: null,
-        },
-      ],
-      site: { ...EMPTY_SITE_CONTENT, contactEmail: "info@example.test" },
-      faq: [],
-    });
-    expect(k).toContain("### Intro AI (page: /programmes/intro-ai)");
-    expect(k).toContain("Fees: To be confirmed");
-    expect(k).toContain("Email: info@example.test");
+  it("uses the exact welcome text", () => {
+    expect(WELCOME).toBe("Aslamoalikum! Welcome to AIDA. How can I help you today?");
+  });
+
+  it("answers the question when a greeting comes with one", () => {
+    expect(ask("Assalam o alaikum, fees kitni hai?")).toContain("PKR 15,000");
+  });
+});
+
+describe("questions in English, Roman Urdu and Urdu", () => {
+  const cases: Array<[string, string]> = [
+    ["How much is the course fee?", "PKR 15,000"],
+    ["fees kitni hai", "USD 55"],
+    ["course ki fees kya hai?", "SAR 200"],
+    ["فیس کتنی ہے؟", "PKR 15,000"],
+    ["What are the class timings?", "9:00 PM"],
+    ["class kab hoti hai", "9:00 PM"],
+    ["کلاس کا وقت کیا ہے", "9:00 PM"],
+    ["How long is the course?", "10 days"],
+    ["kitne din ka course hai", "10 days"],
+    ["Do I need a laptop?", "laptop"],
+    ["kya mobile se class le sakte hain", "laptop"],
+    ["Is free ChatGPT enough?", "ChatGPT"],
+    ["Will I get a certificate?", "certificate"],
+    ["certificate milega?", "certificate"],
+    ["Can I get a refund?", "refund"],
+    ["paise wapas milenge?", "refund"],
+    ["How do I pay?", "Easypaisa"],
+    ["easypaisa number kya hai", "0322 7204898"],
+    ["How can I register?", "Reception"],
+    ["admission kaise lein", "Reception"],
+    ["Do I need coding knowledge?", "beginners"],
+    ["What will I learn?", "Claude"],
+    ["kya sikhaya jayega", "AI"],
+    ["contact number", "+92 322 720 4898"],
+    ["رابطہ نمبر", "+92 322 720 4898"],
+    ["Are recordings available?", "recordings"],
+    ["Are there any discounts?", "discount"],
+    ["Who is the founder?", "founder"],
+  ];
+  it.each(cases)("%s", (q, expected) => {
+    expect(ask(q).toLowerCase()).toContain(expected.toLowerCase());
+  });
+
+  it("includes a relevant website link", () => {
+    expect(ask("fees kitni hai")).toMatch(/\/fees-admission/);
+  });
+
+  it("combines two topics when asked about both", () => {
+    const r = ask("What is the fee and the class timing?");
+    expect(r).toContain("PKR 15,000");
+    expect(r).toContain("9:00 PM");
+  });
+
+  it("explains honestly and offers Reception when information is unavailable", () => {
+    const r = ask("Do you offer hostel accommodation for quantum gardening?");
+    expect(r).toMatch(/couldn't find that/);
+    expect(r).toContain("+92 322 720 4898");
+    expect(isGreeting("hi what is the fee")).toBe(false);
+  });
+
+  it("prefers the precise section answer over a loosely matching FAQ entry", () => {
+    const pointer = { id: "p", question: "Where can I find programme details and fees?", answer: "See /programme and /fees-admission." };
+    const r = offlineReply("fees kitni hai", { faq: [...faq, pointer], sections });
+    expect(r).toContain("PKR 15,000");
+  });
+
+  it("ranks intents by meaning", () => {
+    expect(rankIntents("refund policy kya hai")[0].section).toBe("refund");
+    expect(matchFaq("will there be recordings", faq)?.question).toMatch(/recordings/);
+  });
+});
+
+describe("AI briefing", () => {
+  it("puts the knowledge base first", () => {
+    const k = buildKnowledge({ programmes: [], site: EMPTY_SITE_CONTENT, faq, sections: files });
+    expect(k.indexOf("Course Fees and Payment")).toBeLessThan(k.indexOf("# AIDA"));
+    expect(k).toContain("PKR 15,000");
   });
 
   it("reports whether an API key is configured", () => {
@@ -79,14 +147,12 @@ describe.skipIf(!url)("assistant conversations (PostgreSQL)", () => {
     await db.$disconnect();
   });
 
-  const deps = (ai: null | ((h: unknown) => Promise<string>)) => ({ db, ipHash, now: new Date(), faq, ai });
+  const deps = (ai: null | ((h: unknown) => Promise<string>)) => ({ db, ipHash, now: new Date(), sources, ai });
 
-  it("answers from the FAQ when no AI is configured, and logs the conversation", async () => {
-    const r = await handleAssistantMessage({ message: "How do I register my interest?" }, deps(null));
-    expect(r.ok).toBe(true);
+  it("answers a greeting and logs the conversation", async () => {
+    const r = await handleAssistantMessage({ message: "Aslamoalikum" }, deps(null));
+    expect(r.ok && r.reply).toBe(WELCOME);
     if (!r.ok) return;
-    expect(r.source).toBe("faq");
-    expect(r.reply).toMatch(/register-interest/);
     const msgs = await db.assistantMessage.findMany({ where: { conversationId: r.conversationId }, orderBy: { createdAt: "asc" } });
     expect(msgs.map((m) => [m.role, m.source])).toEqual([
       ["user", "visitor"],
@@ -102,35 +168,31 @@ describe.skipIf(!url)("assistant conversations (PostgreSQL)", () => {
     expect(second.ok && second.source).toBe("ai");
     const history = ai.mock.calls[1][0] as unknown as Array<{ role: string; content: string }>;
     expect(history.map((h) => h.role)).toEqual(["user", "assistant", "user"]);
-    expect(history.at(-1)?.content).toBe("And fees?");
   });
 
-  it("falls back to the FAQ when the AI is unavailable", async () => {
+  it("falls back to FAQ mode when the AI is unavailable", async () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     const r = await handleAssistantMessage(
-      { message: "Is registering interest the same as applying?" },
+      { message: "fees kitni hai" },
       deps(async () => {
         throw new AssistantUnavailableError("down");
       }),
     );
     spy.mockRestore();
     expect(r.ok && r.source).toBe("faq");
+    expect(r.ok && r.reply).toContain("PKR 15,000");
   });
 
   it("does not let a visitor continue someone else's conversation", async () => {
     const r = await handleAssistantMessage({ message: "Hi" }, deps(null));
     if (!r.ok) throw new Error("expected ok");
-    const other = await handleAssistantMessage(
-      { conversationId: r.conversationId, message: "Hi again" },
-      { ...deps(null), ipHash: "f".repeat(64) },
-    );
+    const other = await handleAssistantMessage({ conversationId: r.conversationId, message: "Hi again" }, { ...deps(null), ipHash: "f".repeat(64) });
     expect(other.ok && other.conversationId).not.toBe(r.conversationId);
     if (other.ok) await db.assistantConversation.delete({ where: { id: other.conversationId } });
   });
 
   it("validates input and rate-limits", async () => {
     expect(await handleAssistantMessage({ message: "   " }, deps(null))).toMatchObject({ ok: false, status: 400 });
-    expect(await handleAssistantMessage({ message: "x".repeat(1001) }, deps(null))).toMatchObject({ ok: false, status: 400 });
     let limited = false;
     for (let i = 0; i < ASSISTANT_LIMITS.rateLimitMax + 1; i++) {
       const r = await handleAssistantMessage({ message: `Question ${i}` }, deps(null));

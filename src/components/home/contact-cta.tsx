@@ -17,10 +17,15 @@ export function ContactCta() {
           <p className="mt-6 text-sm font-semibold tracking-wide text-accent-300 uppercase">{contact.eyebrow}</p>
           <h2 className="mx-auto mt-3 max-w-2xl text-3xl font-bold text-white sm:text-4xl">{contact.title}</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-ink-300">{contact.lead}</p>
-          <ButtonLink href={registerCta.href} variant="inverse" size="lg" className="mt-8">
-            {registerCta.label}
-            <ArrowRight className="size-4" aria-hidden />
-          </ButtonLink>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <ButtonLink href="/contact" variant="inverse" size="lg">
+              Contact Reception
+              <ArrowRight className="size-4" aria-hidden />
+            </ButtonLink>
+            <ButtonLink href={registerCta.href} variant="outline-inverse" size="lg">
+              {registerCta.label}
+            </ButtonLink>
+          </div>
           <p className="mx-auto mt-4 max-w-md text-sm text-ink-400">
             Registering interest is not an application for admission.
           </p>

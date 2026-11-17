@@ -33,6 +33,7 @@ export const AUDIT_ACTIONS = {
   faqPublished: "faq.published",
   faqUnpublished: "faq.unpublished",
   faqDeleted: "faq.deleted",
+  knowledgeUpdated: "knowledge.updated",
 } as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -67,6 +68,7 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "faq.published": "FAQ published",
   "faq.unpublished": "FAQ unpublished",
   "faq.deleted": "FAQ deleted",
+  "knowledge.updated": "Knowledge base section updated",
 };
 
 /**

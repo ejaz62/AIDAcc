@@ -316,3 +316,42 @@ model AssistantMessage {
   @@index([conversationId, createdAt])
   @@map("assistant_messages")
 }
+
+// ---------------------------------------------------------------------------
+// AIDA knowledge base (single source for knowledge pages and Ask AIDA)
+// ---------------------------------------------------------------------------
+
+/// One section of the AIDA knowledge base, e.g. "Course Fees and Payment".
+/// Seeded from knowledge/aida/*.md; edited by staff in Admin → Knowledge base.
+model KnowledgeSection {
+  key       String              @id @db.VarChar(40)
+  title     String              @db.VarChar(120)
+  /// Short answer the assistant gives for this topic.
+  summary   String              @db.Text
+  /// Full content (Markdown) shown on the website.
+  body      String              @db.Text
+  sortOrder Int                 @default(0)
+  /// Website page that presents this section.
+  page      String              @db.VarChar(80)
+  updatedAt DateTime            @updatedAt
+  updatedBy String?             @db.VarChar(254)
+  revisions KnowledgeRevision[]
+
+  @@map("knowledge_sections")
+}
+
+/// Every saved version of a section, so no verified information is ever lost.
+model KnowledgeRevision {
+  id         String           @id @default(cuid())
+  sectionKey String
+  section    KnowledgeSection @relation(fields: [sectionKey], references: [key], onDelete: Cascade)
+  title      String           @db.VarChar(120)
+  summary    String           @db.Text
+  body       String           @db.Text
+  authorEmail String          @db.VarChar(254)
+  note       String?          @db.VarChar(200)
+  createdAt  DateTime         @default(now())
+
+  @@index([sectionKey, createdAt])
+  @@map("knowledge_revisions")
+}

@@ -2,11 +2,13 @@ import { notAnApplication, site } from "@/content/site";
 import type { PublicProgramme } from "@/features/content/programmes";
 import { ABOUT_SECTIONS, type SiteContent } from "@/features/content/site-content";
 import type { PublicFaq } from "@/features/faq/faq";
+import type { PublicKnowledgeSection } from "@/features/knowledge/knowledge";
 
 export interface KnowledgeSources {
   programmes: PublicProgramme[];
   site: SiteContent;
   faq: PublicFaq[];
+  sections?: Array<Pick<PublicKnowledgeSection, "title" | "body" | "page">>;
 }
 
 const NOT_PUBLISHED = "(not published yet)";
@@ -15,12 +17,15 @@ const NOT_PUBLISHED = "(not published yet)";
  * Builds the assistant's reference material from PUBLISHED content only.
  * Anything not listed here is unknown to the assistant by design.
  */
-export function buildKnowledge({ programmes, site: details, faq }: KnowledgeSources): string {
+export function buildKnowledge({ programmes, site: details, faq, sections = [] }: KnowledgeSources): string {
   const parts: string[] = [];
+  // The AIDA knowledge base (edited in Admin → Knowledge base) is the primary source.
+  for (const s of sections) parts.push(`## ${s.title} (website page: ${s.page})
+${s.body}`);
 
   parts.push(`# ${site.name} — ${site.fullName}`);
   parts.push(
-    "Website pages: Home (/), About (/about), Programmes (/programmes), Register interest (/register-interest), Contact (/contact), Privacy notice (/privacy), FAQ (/faq).",
+    "Website pages: Home (/), About AIDA (/about), Founder Profile (/founder), AI Training Programme (/programme), Curriculum (/curriculum), Fees & Admission (/fees-admission), FAQs (/faq), Contact (/contact), Programmes (/programmes), Register interest (/register-interest), Privacy notice (/privacy).",
   );
 
   parts.push("## About AIDA");

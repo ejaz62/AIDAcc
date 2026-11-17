@@ -12,22 +12,30 @@ export const site = {
   name: "AIDA",
   fullName: "Artificial Intelligence Digital Academy",
   description:
-    "AIDA — the Artificial Intelligence Digital Academy. Register your interest to hear when programme information is published.",
+    "AIDA — the Artificial Intelligence Digital Academy. A 10-day, live, instructor-led online AI Training Programme for complete beginners.",
 } as const;
 
 export const navigation = [
-  { label: "About", href: "/about" },
-  { label: "Programmes", href: "/programmes" },
-  { label: "FAQ", href: "/faq" },
+  { label: "Home", href: "/" },
+  { label: "About AIDA", href: "/about" },
+  { label: "Founder Profile", href: "/founder" },
+  { label: "AI Training Programme", href: "/programme" },
+  { label: "Curriculum", href: "/curriculum" },
+  { label: "Fees & Admission", href: "/fees-admission" },
+  { label: "FAQs", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
 export const footerNavigation = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
+  { label: "About AIDA", href: "/about" },
+  { label: "Founder Profile", href: "/founder" },
+  { label: "AI Training Programme", href: "/programme" },
+  { label: "Curriculum", href: "/curriculum" },
+  { label: "Fees & Admission", href: "/fees-admission" },
   { label: "Programmes", href: "/programmes" },
   { label: "Register interest", href: "/register-interest" },
-  { label: "FAQ", href: "/faq" },
+  { label: "FAQs", href: "/faq" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy notice", href: "/privacy" },
 ] as const;
@@ -44,9 +52,10 @@ export const hero = {
   eyebrow: "Artificial Intelligence Digital Academy",
   title: "Learn to understand, use and build with",
   highlight: "artificial intelligence.",
-  lead: "AIDA is a digital academy dedicated to artificial intelligence education. Register your interest to be among the first to hear when programme information is published.",
-  primaryCta: { label: "Register interest", href: "/register-interest" },
-  secondaryCta: { label: "About AIDA", href: "/about" },
+  lead: "Join the AIDA AI Training Programme: 10 days of live, instructor-led online classes for complete beginners — no coding needed. Learn Claude and AI tools, build websites with AI and create AI agents.",
+  primaryCta: { label: "View the programme", href: "/programme" },
+  secondaryCta: { label: "Fees & Admission", href: "/fees-admission" },
+  highlights: ["10-day live online course", "9:00–10:00 PM PKT · monthly batches", "Ask AIDA assistant, any time"],
 } as const;
 
 export const about = {
@@ -82,13 +91,13 @@ export const pillars = [
 export const approach = {
   eyebrow: "How it works",
   title: "Your path with AIDA",
-  lead: "From first interest to formal application.",
-  placeholder: true,
+  lead: "How to join the AIDA AI Training Programme.",
+  placeholder: false,
   steps: [
-    { title: "Explore", body: "Read about AIDA and check back as programme information is published." },
-    { title: "Register interest", body: "Leave your details so we can let you know about news and openings." },
-    { title: "Receive updates", body: "We contact you by email when there is relevant information to share." },
-    { title: "Apply", body: "When admissions open, apply formally through the separate admissions process." },
+    { title: "Contact Reception", body: "Call or message AIDA Reception on +92 322 720 4898 with any questions." },
+    { title: "Choose a batch", body: "Pick a monthly batch: 1st–10th, 11th–20th or 21st–30th." },
+    { title: "Pay the fee", body: "Pay via Easypaisa (Pakistan) or ask Reception for instructions from other countries." },
+    { title: "Get confirmed", body: "AIDA verifies your payment and then confirms your registration." },
   ],
 } as const;
 
@@ -101,7 +110,7 @@ export const programmes = {
 } as const;
 
 export const contact = {
-  eyebrow: "Stay informed",
-  title: "Be the first to hear when programme information is published",
-  lead: "Register your interest and we will contact you by email when there is news to share.",
+  eyebrow: "Ready to start?",
+  title: "Join the next AIDA batch",
+  lead: "Contact AIDA Reception to choose your batch, or register your interest and we will get in touch.",
 } as const;

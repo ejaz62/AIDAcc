@@ -7,9 +7,10 @@ import { Container, SectionHeading } from "@/components/ui/primitives";
 import { site } from "@/content/site";
 import { ABOUT_SECTIONS } from "@/features/content/site-content";
 import { getSiteDetails } from "@/features/content/queries";
+import { KnowledgeHelp, KnowledgeSections } from "@/features/knowledge/knowledge-content";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About AIDA",
   description: `About ${site.name}, the ${site.fullName}.`,
 };
 
@@ -21,10 +22,11 @@ export default async function AboutPage() {
   return (
     <>
       <PageHeader
-        eyebrow="About"
+        eyebrow="About AIDA"
         title={site.fullName}
         lead={`${site.name} stands for ${site.fullName} — a digital academy focused on artificial intelligence education.`}
       />
+      <KnowledgeSections keys={["about"]} showTitles={false} />
       {published.length > 0 && (
         <section className="py-20 sm:py-24">
           <Container className="max-w-4xl space-y-14">
@@ -37,7 +39,7 @@ export default async function AboutPage() {
           </Container>
         </section>
       )}
-      <div className={published.length > 0 ? "border-t border-border" : ""}>
+      <div className="border-t border-border">
         <About />
       </div>
       {pending.length > 0 && (
@@ -65,6 +67,7 @@ export default async function AboutPage() {
           </Container>
         </section>
       )}
+      <KnowledgeHelp />
       <ContactCta />
     </>
   );

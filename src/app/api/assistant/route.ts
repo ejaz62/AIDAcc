@@ -4,7 +4,7 @@ import { getClientIpHash } from "@/lib/request";
 import { buildKnowledge } from "@/features/assistant/knowledge";
 import { generateAiReply, isAiConfigured } from "@/features/assistant/claude";
 import { handleAssistantMessage } from "@/features/assistant/service";
-import { getPublishedFaq, getPublishedProgrammes, getSiteDetails } from "@/features/content/queries";
+import { getKnowledgeSections, getPublishedFaq, getPublishedProgrammes, getSiteDetails } from "@/features/content/queries";
 
 /** Rejects cross-site requests: the assistant is only for this website's own pages. */
 function sameOrigin(request: Request): boolean {
@@ -21,7 +21,12 @@ export async function POST(request: Request) {
   await connection();
   if (!sameOrigin(request)) return Response.json({ error: "Forbidden" }, { status: 403 });
 
-  const [site, programmes, faq] = await Promise.all([getSiteDetails(), getPublishedProgrammes(), getPublishedFaq()]);
+  const [site, programmes, faq, sections] = await Promise.all([
+    getSiteDetails(),
+    getPublishedProgrammes(),
+    getPublishedFaq(),
+    getKnowledgeSections(),
+  ]);
   if (!site.assistantEnabled) return Response.json({ error: "The assistant is currently switched off." }, { status: 503 });
 
   let body: unknown;
@@ -32,12 +37,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const knowledge = buildKnowledge({ programmes, site, faq });
+    const knowledge = buildKnowledge({ programmes, site, faq, sections });
     const result = await handleAssistantMessage(body, {
       db: getDb(),
       ipHash: await getClientIpHash(),
       now: new Date(),
-      faq,
+      sources: { faq, sections },
       ai: isAiConfigured() ? (history) => generateAiReply(knowledge, history) : null,
     });
     if (!result.ok) return Response.json({ error: result.error }, { status: result.status });

@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Loader2, MessageCircle, RotateCcw, Send, Sparkles, X } from "lucide-react";
+import { RotateCcw, Send, X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { WELCOME } from "./offline";
 
 interface Message {
   role: "user" | "assistant";
@@ -12,19 +14,24 @@ interface Message {
 
 const STORAGE_KEY = "aida-assistant";
 export const OPEN_ASSISTANT_EVENT = "aida:open-assistant";
+export const ASSISTANT_AVATAR = "/images/ask-aida-assistant.svg";
 
-const SUGGESTIONS = [
-  "What programmes does AIDA offer?",
-  "How do I register my interest?",
-  "Is registering interest the same as applying?",
-  "How can I contact AIDA?",
-];
+const SUGGESTIONS = ["What is the course fee?", "Class timings kya hain?", "Do I need a laptop?", "Refund policy kya hai?"];
 
-const GREETING: Message = {
-  role: "assistant",
-  content:
-    "Hello! I'm Ask AIDA. I can answer questions about the Artificial Intelligence Digital Academy using its published information. What would you like to know?",
-};
+const GREETING: Message = { role: "assistant", content: WELCOME };
+
+function Avatar({ size, className }: { size: number; className?: string }) {
+  return (
+    <Image
+      src={ASSISTANT_AVATAR}
+      alt=""
+      width={size}
+      height={size}
+      unoptimized
+      className={cn("shrink-0 rounded-full", className)}
+    />
+  );
+}
 
 function loadSaved(): { conversationId: string | null; messages: Message[] } | null {
   if (typeof window === "undefined") return null;
@@ -39,9 +46,11 @@ function loadSaved(): { conversationId: string | null; messages: Message[] } | n
   }
 }
 
-/** Turns site paths like /programmes in a reply into links, without rendering any HTML. */
+/** Turns site paths like /fees-admission in a reply into links, without rendering any HTML. */
 function linkify(text: string): ReactNode[] {
-  const parts = text.split(/(\/(?:programmes(?:\/[a-z0-9-]+)?|register-interest|contact|about|privacy|faq)\b)/g);
+  const parts = text.split(
+    /(\/(?:programmes(?:\/[a-z0-9-]+)?|programme|curriculum|fees-admission|founder|register-interest|contact|about|privacy|faq)\b)/g,
+  );
   return parts.map((part, i) =>
     i % 2 === 1 ? (
       <Link key={i} href={part} className="font-semibold text-brand-700 underline underline-offset-2">
@@ -55,8 +64,8 @@ function linkify(text: string): ReactNode[] {
 
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
-  // Restore this browser tab's conversation (convenience only). The panel is closed on
-  // first render, so restored messages never affect server-rendered markup.
+  // Restore this browser tab's conversation, so it continues across pages. The panel is
+  // closed on first render, so restored messages never affect server-rendered markup.
   const [saved] = useState(loadSaved);
   const [messages, setMessages] = useState<Message[]>(saved?.messages ?? [GREETING]);
   const [conversationId, setConversationId] = useState<string | null>(saved?.conversationId ?? null);
@@ -89,7 +98,7 @@ export function AssistantWidget() {
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, pending]);
+  }, [messages, pending, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -143,6 +152,11 @@ export function AssistantWidget() {
     inputRef.current?.focus();
   };
 
+  const close = () => {
+    setOpen(false);
+    launcherRef.current?.focus();
+  };
+
   return (
     <>
       <button
@@ -151,13 +165,26 @@ export function AssistantWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="aida-assistant"
+        aria-label={open ? "Close Ask AIDA assistant" : "Open Ask AIDA assistant"}
         className={cn(
-          "fixed right-4 bottom-4 z-[70] flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3.5 font-semibold text-white shadow-(--shadow-glow) transition-transform hover:scale-105 hover:bg-brand-700 sm:right-6 sm:bottom-6",
+          "fixed right-4 bottom-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:bottom-6 sm:pr-5",
           open && "hidden sm:flex",
         )}
       >
-        {open ? <X className="size-5" aria-hidden /> : <Sparkles className="size-5" aria-hidden />}
-        <span>{open ? "Close" : "Ask AIDA"}</span>
+        <span className="relative">
+          <Avatar size={52} className="ring-2 ring-white/80" />
+          {open ? (
+            <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-white text-ink-950 shadow">
+              <X className="size-3.5" aria-hidden />
+            </span>
+          ) : (
+            <span className="absolute right-0 bottom-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400" aria-hidden />
+          )}
+        </span>
+        <span className="hidden text-left leading-tight sm:block" aria-hidden>
+          <span className="block font-display font-bold">{open ? "Close chat" : "Ask AIDA"}</span>
+          <span className="block text-xs text-ink-300">{open ? "Your chat is kept" : "Questions? I can help"}</span>
+        </span>
       </button>
 
       {open && (
@@ -165,35 +192,34 @@ export function AssistantWidget() {
           id="aida-assistant"
           role="dialog"
           aria-label="Ask AIDA assistant"
-          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:right-6 sm:bottom-24 sm:h-[min(640px,calc(100vh-8rem))] sm:w-[400px] sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
+          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:right-6 sm:bottom-28 sm:h-[min(620px,calc(100dvh-9rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
         >
-          <header className="flex items-center justify-between gap-3 bg-ink-950 px-4 py-3.5 text-white sm:rounded-t-(--radius-card)">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500">
-                <MessageCircle className="size-5" aria-hidden />
+          <header className="flex items-center justify-between gap-3 bg-gradient-to-r from-ink-950 to-brand-950 px-4 py-3 text-white">
+            <div className="flex items-center gap-3">
+              <span className="relative">
+                <Avatar size={44} className="ring-2 ring-white/70" />
+                <span className="absolute right-0 bottom-0 size-3 rounded-full border-2 border-ink-950 bg-emerald-400" aria-hidden />
               </span>
               <div>
                 <p className="font-display font-bold">Ask AIDA</p>
-                <p className="text-xs text-ink-300">Answers from AIDA&apos;s published information</p>
+                <p className="text-xs text-ink-300">AIDA&apos;s virtual assistant · Online</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={reset}
-                className="rounded-lg p-2 text-ink-300 hover:bg-white/10 hover:text-white"
-                aria-label="Start a new conversation"
-                title="New conversation"
+                className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium text-ink-200 hover:bg-white/10 hover:text-white"
+                aria-label="Start a new chat"
+                title="New chat"
               >
                 <RotateCcw className="size-4" aria-hidden />
+                <span className="hidden sm:inline">New chat</span>
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setOpen(false);
-                  launcherRef.current?.focus();
-                }}
-                className="rounded-lg p-2 text-ink-300 hover:bg-white/10 hover:text-white"
+                onClick={close}
+                className="rounded-lg p-2 text-ink-200 hover:bg-white/10 hover:text-white"
                 aria-label="Close assistant"
               >
                 <X className="size-5" aria-hidden />
@@ -203,30 +229,40 @@ export function AssistantWidget() {
 
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-ink-50 p-4" aria-live="polite">
             {messages.map((m, i) => (
-              <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+              <div key={i} className={cn("flex items-end gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
+                {m.role === "assistant" && <Avatar size={28} />}
                 <p
                   className={cn(
-                    "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line",
+                    "max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line shadow-sm",
                     m.role === "user"
                       ? "rounded-br-md bg-brand-600 text-white"
                       : "rounded-bl-md border border-border bg-surface text-ink-800",
                   )}
                 >
-                  <span className="sr-only">{m.role === "user" ? "You: " : "Assistant: "}</span>
+                  <span className="sr-only">{m.role === "user" ? "You: " : "Ask AIDA: "}</span>
                   {m.role === "assistant" ? linkify(m.content) : m.content}
                 </p>
               </div>
             ))}
             {pending && (
-              <div className="flex justify-start" role="status">
-                <span className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-border bg-surface px-3.5 py-2.5 text-sm text-ink-600">
-                  <Loader2 className="size-4 animate-spin" aria-hidden /> Thinking…
+              <div className="flex items-end gap-2" role="status">
+                <Avatar size={28} />
+                <span className="flex items-center gap-1 rounded-2xl rounded-bl-md border border-border bg-surface px-4 py-3.5">
+                  <span className="sr-only">Ask AIDA is typing…</span>
+                  {[0, 150, 300].map((d) => (
+                    <span
+                      key={d}
+                      className="size-2 animate-bounce rounded-full bg-brand-400"
+                      style={{ animationDelay: `${d}ms` }}
+                      aria-hidden
+                    />
+                  ))}
                 </span>
               </div>
             )}
             {messages.length === 1 && !pending && (
-              <div className="pt-2">
-                <p className="mb-2 text-xs font-semibold tracking-wide text-ink-500 uppercase">Try asking</p>
+              <div className="pt-1 pl-9">
+                <p className="mb-2 text-xs font-semibold tracking-wide text-ink-500 uppercase">Popular questions</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map((s) => (
                     <button
@@ -284,13 +320,6 @@ export function AssistantWidget() {
                 <Send className="size-4" aria-hidden />
               </button>
             </div>
-            <p className="mt-2 text-[0.7rem] leading-snug text-ink-500">
-              Please don&apos;t share personal details. Chats are kept for 30 days to improve answers (see{" "}
-              <Link href="/privacy" className="underline">
-                privacy
-              </Link>
-              ). Answers may be incomplete; this is not an admission application.
-            </p>
           </form>
         </section>
       )}

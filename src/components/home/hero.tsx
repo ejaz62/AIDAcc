@@ -32,11 +32,7 @@ export function Hero() {
             </OpenAssistantButton>
           </div>
           <ul className="mt-10 grid gap-4 text-sm text-ink-300 sm:grid-cols-3">
-            {[
-              { icon: MonitorSmartphone, text: "Digital-first academy" },
-              { icon: MessageCircle, text: "Ask AIDA assistant, any time" },
-              { icon: Clock, text: "Register interest in a minute" },
-            ].map(({ icon: Icon, text }) => (
+            {[MonitorSmartphone, Clock, MessageCircle].map((icon, i) => ({ icon, text: hero.highlights[i] })).map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-center gap-2">
                 <Icon className="size-4 shrink-0 text-accent-300" aria-hidden /> {text}
               </li>

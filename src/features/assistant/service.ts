@@ -1,8 +1,8 @@
 import { z } from "zod";
 import type { PrismaClient } from "@/generated/prisma/client";
-import type { PublicFaq } from "@/features/faq/faq";
+
 import { AssistantUnavailableError, type ChatTurn } from "./claude";
-import { offlineReply } from "./offline";
+import { offlineReply, type AnswerSources } from "./offline";
 
 export const ASSISTANT_LIMITS = {
   messageMax: 1000,
@@ -32,7 +32,8 @@ export interface AssistantDeps {
   db: PrismaClient;
   ipHash: string;
   now: Date;
-  faq: PublicFaq[];
+  /** Knowledge-base sections and published FAQ used for FAQ-mode answers. */
+  sources: AnswerSources;
   /** Null when no AI provider is configured: answers come from the FAQ. */
   ai: null | ((history: ChatTurn[]) => Promise<string>);
 }
@@ -89,10 +90,10 @@ export async function handleAssistantMessage(raw: unknown, deps: AssistantDeps):
     } catch (err) {
       if (!(err instanceof AssistantUnavailableError)) throw err;
       console.error("[assistant] AI unavailable, using FAQ fallback:", err.message);
-      reply = offlineReply(message, deps.faq);
+      reply = offlineReply(message, deps.sources);
     }
   } else {
-    reply = offlineReply(message, deps.faq);
+    reply = offlineReply(message, deps.sources);
   }
 
   await db.assistantMessage.create({ data: { conversationId: conversation.id, role: "assistant", content: reply, source } });

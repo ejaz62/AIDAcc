@@ -35,6 +35,11 @@ code, chat or documents.
    ```bash
    npm run admin:create
    ```
+7. **Developer:** after a release that adds knowledge-base sections, load them (adds missing sections and FAQ
+   questions only; never overwrites staff edits):
+   ```bash
+   npm run supabase -- npm run kb:seed
+   ```
 
 ## 2. Code on GitHub
 

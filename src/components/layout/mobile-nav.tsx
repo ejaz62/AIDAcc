@@ -40,7 +40,7 @@ export function MobileNav() {
   };
 
   return (
-    <div className="lg:hidden">
+    <div className="xl:hidden">
       <button
         type="button"
         onClick={toggle}
@@ -59,7 +59,7 @@ export function MobileNav() {
           className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto border-t border-border bg-surface px-4 py-6"
         >
           <nav aria-label="Mobile" className="flex flex-col gap-1">
-            {[{ label: "Home", href: "/" }, ...navigation].map((item) => {
+            {navigation.map((item) => {
               const active = isActive(item.href);
               return (
                 <Link

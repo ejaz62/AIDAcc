@@ -27,7 +27,7 @@ export function SiteHeader() {
           </ButtonLink>
           <Suspense
             fallback={
-              <span className="inline-flex size-10 items-center justify-center text-ink-700 lg:hidden" aria-hidden>
+              <span className="inline-flex size-10 items-center justify-center text-ink-700 xl:hidden" aria-hidden>
                 <Menu className="size-5" />
               </span>
             }

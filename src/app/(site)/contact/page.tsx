@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, Container } from "@/components/ui/primitives";
 import { registerCta } from "@/content/site";
 import { getSiteDetails } from "@/features/content/queries";
+import { KnowledgeSections } from "@/features/knowledge/knowledge-content";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -17,8 +18,9 @@ export default async function ContactPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Contact" title="Get in touch" lead="How to reach the AIDA team." />
-      <Container className="py-14 sm:py-20">
+      <PageHeader eyebrow="Contact" title="Get in touch" lead="Contact AIDA Reception for admission, payment and any other questions." />
+      <KnowledgeSections keys={["contact"]} />
+      <Container className="max-w-4xl pb-16 sm:pb-20">
         <div className="grid gap-6 md:grid-cols-2">
           {hasOfficial ? (
             <Card>
@@ -64,8 +66,8 @@ export default async function ContactPage() {
               </span>
               <h2 className="mt-6 text-xl font-bold text-ink-950">Official contact details</h2>
               <p className="mt-2 leading-relaxed text-muted">
-                AIDA&apos;s official email address, telephone number and postal address have not been published yet.
-                They will appear on this page once confirmed.
+                Further official details, such as a postal address, will appear here once confirmed. Please contact
+                AIDA Reception using the details above.
               </p>
             </Card>
           )}

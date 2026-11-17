@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { getPublishedProgrammeBySlug, listPublishedProgrammes } from "./programmes";
 import { getPublishedSiteContent } from "./site-content";
 import { listPublishedFaq } from "@/features/faq/faq";
+import { listSections } from "@/features/knowledge/knowledge";
 import { CONTENT_TAGS } from "./tags";
 
 /*
@@ -38,4 +39,11 @@ export async function getPublishedFaq() {
   cacheTag(CONTENT_TAGS.faq);
   cacheLife("hours");
   return listPublishedFaq(getDb());
+}
+
+export async function getKnowledgeSections() {
+  "use cache";
+  cacheTag(CONTENT_TAGS.knowledge);
+  cacheLife("hours");
+  return listSections(getDb());
 }

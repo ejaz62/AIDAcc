@@ -13,7 +13,7 @@ export function useIsActive() {
 
 function NavList({ isActive }: { isActive: (href: string) => boolean }) {
   return (
-    <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+    <nav aria-label="Main" className="hidden items-center gap-0.5 xl:flex">
       {navigation.map((item) => {
         const active = isActive(item.href);
         return (
@@ -22,7 +22,7 @@ function NavList({ isActive }: { isActive: (href: string) => boolean }) {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
+              "rounded-lg px-2.5 py-2 text-sm font-medium whitespace-nowrap transition-colors",
               active ? "bg-brand-50 text-brand-700" : "text-ink-600 hover:bg-ink-100 hover:text-ink-950",
             )}
           >

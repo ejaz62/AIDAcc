@@ -6,7 +6,7 @@ import { getSiteUrl } from "@/lib/site-config";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
   const url = (path: string) => new URL(path, base).toString();
-  const staticPages = ["/", "/about", "/programmes", "/register-interest", "/faq", "/contact", "/privacy"];
+  const staticPages = ["/", "/about", "/founder", "/programme", "/curriculum", "/fees-admission", "/programmes", "/register-interest", "/faq", "/contact", "/privacy"];
   const programmes = await getPublishedProgrammes();
   return [
     ...staticPages.map((path) => ({ url: url(path), changeFrequency: "weekly" as const, priority: path === "/" ? 1 : 0.7 })),
