@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sslFor } from "@/lib/db-ssl";
 import { PrismaClient } from "@/generated/prisma/client";
 import { createPrismaInterestRepository } from "@/features/interest/prisma-repository";
 import { POLICY } from "@/features/interest/service";
@@ -19,7 +20,7 @@ describe.skipIf(!url)("Prisma interest repository (PostgreSQL)", () => {
   let db: PrismaClient;
 
   beforeAll(() => {
-    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined }) });
+    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined, ssl: sslFor(url!) }), transactionOptions: { maxWait: 10_000, timeout: 20_000 } });
   });
 
   afterAll(async () => {

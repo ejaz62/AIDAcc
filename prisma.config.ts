@@ -13,6 +13,6 @@ export default defineConfig({
     // Migrations need a direct (non-pooled) connection, e.g. Supabase port 5432.
     url: process.env.DIRECT_URL || process.env.DATABASE_URL,
     // Only needed for `prisma migrate dev` (local development).
-    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL || undefined,
   },
 });

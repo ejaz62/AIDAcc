@@ -56,6 +56,9 @@ are ever pulled into browser code.
 | `npm run db:studio` | Browse the database |
 | `npm run admin:create` | Create a staff account / reset a password |
 | `npm run db:cleanup` | Remove expired sessions and old rate-limit records |
+| `npm run db:check` | Read-only connection check (`-- --supabase-file`, `-- --counts`) |
+| `npm run supabase -- <cmd>` | Run a command against Supabase from `.env.supabase.local` |
+| `npm run use-db -- supabase\|local` | Point `.env.local` at Supabase or the local database |
 
 ## Project structure
 

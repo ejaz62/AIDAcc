@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sslFor } from "@/lib/db-ssl";
 import { PrismaClient } from "@/generated/prisma/client";
 import { deliverEmail, enqueueEmail, MAX_ATTEMPTS, processOutbox } from "@/features/email/outbox";
 import { queueDailyDigest, queueNewRegistrationEmails } from "@/features/email/notifications";
@@ -34,7 +35,7 @@ describe.skipIf(!url)("email outbox and notifications (PostgreSQL)", () => {
   const startedAt = new Date();
 
   beforeAll(async () => {
-    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined }) });
+    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined, ssl: sslFor(url!) }), transactionOptions: { maxWait: 10_000, timeout: 20_000 } });
     // Other staff in this database must not receive this run's test emails.
     await db.user.createMany({
       data: [

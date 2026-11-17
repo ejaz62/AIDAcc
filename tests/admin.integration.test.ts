@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sslFor } from "@/lib/db-ssl";
 import { PrismaClient } from "@/generated/prisma/client";
 import { createAuth, type Auth } from "@/lib/auth-config";
 import { AUDIT_ACTIONS } from "@/features/admin/audit";
@@ -32,7 +33,7 @@ describe.skipIf(!url)("admin area (PostgreSQL)", () => {
   const auditIds: string[] = [];
 
   beforeAll(async () => {
-    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined }) });
+    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined, ssl: sslFor(url!) }), transactionOptions: { maxWait: 10_000, timeout: 20_000 } });
     auth = createAuth(db, { secret: randomBytes(32).toString("hex"), baseURL: "http://localhost:3000", nextCookies: false });
     const user = await createAdminUser(auth, db, { name: "IT Admin", email: `admin${domain}`, password });
     actor = { id: user.id, name: user.name, email: user.email, role: "admin" };

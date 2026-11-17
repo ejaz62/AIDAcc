@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sslFor } from "@/lib/db-ssl";
 import { PrismaClient } from "@/generated/prisma/client";
 import { getSiteUrl, isIndexingAllowed } from "@/lib/site-config";
 import { pruneOldRecords, RETENTION } from "@/features/maintenance/cleanup";
@@ -40,7 +41,7 @@ describe.skipIf(!url)("pruneOldRecords (PostgreSQL)", () => {
   const old = (days: number) => new Date(now.getTime() - (days + 1) * 86_400_000);
 
   beforeAll(() => {
-    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined }) });
+    db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url!, max: Number(process.env.DATABASE_POOL_MAX) || undefined, ssl: sslFor(url!) }), transactionOptions: { maxWait: 10_000, timeout: 20_000 } });
   });
   afterAll(async () => {
     await db.submissionAttempt.deleteMany({ where: { formToken: { startsWith: marker } } });

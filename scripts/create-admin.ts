@@ -13,6 +13,7 @@ import { createInterface } from "node:readline";
 import { Writable } from "node:stream";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { sslFor } from "../src/lib/db-ssl";
 import { createAuth } from "../src/lib/auth-config";
 import { createAdminUser, newAdminSchema, resetAdminPassword } from "../src/features/admin/users";
 
@@ -73,7 +74,7 @@ async function main() {
     : newAdminSchema.safeParse({ email, name, password });
   if (!check.success) throw new Error(check.error.issues.map((i) => i.message).join("\n"));
 
-  const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: DATABASE_URL }) });
+  const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: DATABASE_URL, ssl: sslFor(DATABASE_URL) }), transactionOptions: { maxWait: 10_000, timeout: 20_000 } });
   try {
     const auth = createAuth(db, { secret: BETTER_AUTH_SECRET, baseURL: BETTER_AUTH_URL, nextCookies: false });
     if (reset) {

@@ -15,5 +15,9 @@ export default defineConfig({
     setupFiles: ["tests/setup.ts"],
     // Integration tests share one database; run files sequentially.
     fileParallelism: false,
+    // Database tests may run against a remote database (e.g. Supabase), where each
+    // round trip can take hundreds of milliseconds.
+    testTimeout: 60_000,
+    hookTimeout: 120_000,
   },
 });

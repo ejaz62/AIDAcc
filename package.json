@@ -17,7 +17,10 @@
     "postinstall": "prisma generate",
     "admin:create": "tsx scripts/create-admin.ts",
     "db:cleanup": "tsx scripts/cleanup.ts",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "db:check": "tsx scripts/check-database.ts",
+    "supabase": "tsx scripts/with-supabase.ts",
+    "use-db": "tsx scripts/use-database.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",

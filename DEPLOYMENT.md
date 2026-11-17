@@ -10,24 +10,28 @@ code, chat or documents.
 
 ## 1. Supabase database
 
-1. **You:** create a project at <https://supabase.com/dashboard>.
-   - Choose the region closest to most of your users (and to your Vercel region).
-   - Save the database password in your password manager.
-2. **You:** open **Project → Connect** (or *Project Settings → Database*) and copy two connection strings:
-   - **Transaction pooler** (port **6543**). This becomes `DATABASE_URL`. Add `?pgbouncer=true` to the end.
-   - **Session pooler** or **Direct connection** (port **5432**). This becomes `DIRECT_URL` (used for migrations).
-3. **You:** put them in `.env.local` on your computer, replacing the local values:
-   ```
-   DATABASE_URL="postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?pgbouncer=true"
-   DIRECT_URL="postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres"
-   ```
-   Remove (or comment out) `SHADOW_DATABASE_URL`. It is only for the local development database.
-4. **Developer:** apply the schema and verify everything against Supabase:
+> **Status (17 Nov 2026):** done. The project is in region ap-southeast-2 (Sydney), its tables are
+> created, all tests pass against it, and `.env.local` points at it. Remaining for you: step 6.
+
+1. **You:** create a project at <https://supabase.com/dashboard> (generated database password; save it).
+2. **You:** in **Connect → Connection String**, copy the **Transaction pooler** string (port 6543) into
+   `.env.supabase.local` as `SUPABASE_TRANSACTION_URL`, and the password as `SUPABASE_DB_PASSWORD`.
+   The Session pooler string (port 5432) is the same with the port changed (`SUPABASE_SESSION_URL`).
+   This file is git-ignored; strings may keep their `[YOUR-PASSWORD]` placeholder.
+3. **You:** *Project Settings → Database → SSL Configuration → Download certificate*. It is stored in the
+   repository as `certs/supabase-ca.crt` (a public certificate, not a secret). All connections to Supabase
+   are encrypted **and verified** against it (`src/lib/db-ssl.ts`; migrations via `sslcert`/`sslaccept=strict`).
+4. **Developer:** check, migrate and test without touching `.env.local`:
    ```bash
-   npm run db:deploy      # creates the tables
-   npm test               # unit + integration tests against Supabase
+   npm run db:check -- --supabase-file          # read-only connection check
+   npm run supabase -- npx prisma migrate deploy  # create/update tables
+   npm run supabase -- npx vitest run             # full test suite against Supabase
    ```
-5. **You:** create your own staff account (you type the password; it is never shown or stored in plain text):
+5. **Developer:** point the local site at Supabase (the local settings are saved in `.env.localdb.local`):
+   ```bash
+   npm run use-db -- supabase    # switch back any time with: npm run use-db -- local
+   ```
+6. **You:** create your own staff account (you type the password; it is never shown or stored in plain text):
    ```bash
    npm run admin:create
    ```
@@ -50,8 +54,8 @@ code, chat or documents.
 
    | Variable | Value |
    | --- | --- |
-   | `DATABASE_URL` | Supabase transaction pooler URL (port 6543, `?pgbouncer=true`) |
-   | `DIRECT_URL` | Supabase session/direct URL (port 5432) |
+   | `DATABASE_URL` | Copy from your `.env.local` (Supabase transaction pooler, port 6543, `?pgbouncer=true`) |
+   | `DIRECT_URL` | Copy from your `.env.local` (session pooler, port 5432, with `sslmode=require&sslcert=certs/supabase-ca.crt&sslaccept=strict`) |
    | `IP_HASH_SALT` | New random value: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
    | `BETTER_AUTH_SECRET` | New random value: `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"` |
    | `BETTER_AUTH_URL` | The site's public address, e.g. `https://aida-xyz.vercel.app` (later your own domain) |
