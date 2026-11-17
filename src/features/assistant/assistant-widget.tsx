@@ -15,6 +15,7 @@ interface Message {
 const STORAGE_KEY = "aida-assistant";
 export const OPEN_ASSISTANT_EVENT = "aida:open-assistant";
 export const ASSISTANT_AVATAR = "/images/ask-aida-avatar.webp";
+export const ASSISTANT_IMAGE = "/images/ask-aida-full.webp";
 
 const SUGGESTIONS = ["What is the course fee?", "Class timings kya hain?", "Do I need a laptop?", "Refund policy kya hai?"];
 
@@ -121,7 +122,7 @@ export function AssistantWidget() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
-        launcherRef.current?.focus();
+        setTimeout(() => launcherRef.current?.focus(), 0);
       }
     };
     document.addEventListener("keydown", onKey);
@@ -169,7 +170,7 @@ export function AssistantWidget() {
 
   const close = () => {
     setOpen(false);
-    launcherRef.current?.focus();
+    setTimeout(() => launcherRef.current?.focus(), 0);
   };
 
   return (
@@ -183,22 +184,16 @@ export function AssistantWidget() {
         aria-label={open ? "Close Ask AIDA assistant" : "Open Ask AIDA assistant"}
         className={cn(
           "scale-original fixed top-(--aida-top,6.5rem) right-4 z-[70] flex items-center gap-3 rounded-full bg-ink-950 p-1.5 text-white shadow-(--shadow-glow) ring-1 ring-white/15 transition-transform hover:scale-[1.03] focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:right-6 sm:pr-5",
-          open && "hidden sm:flex",
+          open && "hidden",
         )}
       >
         <span className="relative">
           <Avatar size={52} className="ring-2 ring-white/80" />
-          {open ? (
-            <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-white text-ink-950 shadow">
-              <X className="size-3.5" aria-hidden />
-            </span>
-          ) : (
-            <span className="absolute right-0 bottom-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400" aria-hidden />
-          )}
+          <span className="absolute right-0 bottom-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400" aria-hidden />
         </span>
         <span className="hidden text-left leading-tight sm:block" aria-hidden>
-          <span className="block font-display font-bold">{open ? "Close chat" : "Ask AIDA"}</span>
-          <span className="block text-xs text-ink-300">{open ? "Your chat is kept" : "Questions? I can help"}</span>
+          <span className="block font-display font-bold">Ask AIDA</span>
+          <span className="block text-xs text-ink-300">Questions? I can help</span>
         </span>
       </button>
 
@@ -207,18 +202,14 @@ export function AssistantWidget() {
           id="aida-assistant"
           role="dialog"
           aria-label="Ask AIDA assistant"
-          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:top-[calc(var(--aida-top,6.5rem)+4.75rem)] sm:right-6 sm:h-[min(620px,calc(100dvh-var(--aida-top,6.5rem)-6rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
+          className="fixed inset-0 z-[80] flex flex-col bg-surface sm:inset-auto sm:top-(--aida-top,6.5rem) sm:right-6 sm:h-[min(680px,calc(100dvh-var(--aida-top,6.5rem)-1.5rem))] sm:w-[400px] sm:overflow-hidden sm:rounded-(--radius-card) sm:border sm:border-border sm:shadow-2xl"
         >
           <header className="scale-original flex items-center justify-between gap-3 bg-gradient-to-r from-ink-950 to-brand-950 px-4 py-3 text-white">
-            <div className="flex items-center gap-3">
-              <span className="relative">
-                <Avatar size={44} className="ring-2 ring-white/70" />
-                <span className="absolute right-0 bottom-0 size-3 rounded-full border-2 border-ink-950 bg-emerald-400" aria-hidden />
-              </span>
-              <div>
-                <p className="font-display font-bold">Ask AIDA</p>
-                <p className="text-xs text-ink-300">AIDA&apos;s virtual assistant · Online</p>
-              </div>
+            <div>
+              <p className="font-display font-bold">Ask AIDA</p>
+              <p className="flex items-center gap-1.5 text-xs text-ink-300">
+                <span className="size-2 rounded-full bg-emerald-400" aria-hidden /> AIDA&apos;s virtual assistant · Online
+              </p>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -243,9 +234,18 @@ export function AssistantWidget() {
           </header>
 
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-ink-50 p-4" aria-live="polite">
+            <figure className="overflow-hidden rounded-2xl ring-1 ring-border">
+              <Image
+                src={ASSISTANT_IMAGE}
+                alt="Ask AIDA, the academy's virtual assistant"
+                width={447}
+                height={420}
+                unoptimized
+                className="h-auto w-full"
+              />
+            </figure>
             {messages.map((m, i) => (
               <div key={i} className={cn("flex items-end gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
-                {m.role === "assistant" && <Avatar size={28} />}
                 <p
                   dir="auto"
                   className={cn(
@@ -262,7 +262,6 @@ export function AssistantWidget() {
             ))}
             {pending && (
               <div className="flex items-end gap-2" role="status">
-                <Avatar size={28} />
                 <span className="flex items-center gap-1 rounded-2xl rounded-bl-md border border-border bg-surface px-4 py-3.5">
                   <span className="sr-only">Ask AIDA is typing…</span>
                   {[0, 150, 300].map((d) => (
@@ -277,7 +276,7 @@ export function AssistantWidget() {
               </div>
             )}
             {messages.length === 1 && !pending && (
-              <div className="pt-1 pl-9">
+              <div className="pt-1">
                 <p className="mb-2 text-xs font-semibold tracking-wide text-ink-500 uppercase">Popular questions</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map((s) => (

@@ -16,7 +16,7 @@ whenever you like.
 
 These images were supplied by AIDA's founder and are shown as illustrative images:
 hero-ai-students.webp, workshop-ai-lab.webp, learning-workspace.webp, ai-agents.webp,
-ask-aida-robot.webp and ask-aida-avatar.webp (Ask AIDA assistant).
+ask-aida-full.webp and ask-aida-avatar.webp (Ask AIDA assistant, supplied by AIDA; a watermark strip was trimmed).
 founder-muhammad-ejaz.webp is the founder's own photo.
 
 `ask-aida-assistant.svg` is an earlier original illustration (no longer used on the site).
