@@ -6,6 +6,8 @@ export const RETENTION = {
   loginAttemptsDays: 90,
   /** Delivered, previewed or permanently failed emails (they contain personal data). */
   emailsDays: 30,
+  /** Ask AIDA conversations (may contain whatever visitors typed). */
+  assistantDays: 30,
 } as const;
 
 const daysAgo = (now: Date, days: number) => new Date(now.getTime() - days * 86_400_000);
@@ -24,6 +26,9 @@ export async function pruneOldRecords(db: PrismaClient, now = new Date()) {
   });
   const sessions = await db.session.deleteMany({ where: { expiresAt: { lt: now } } });
   const verifications = await db.verification.deleteMany({ where: { expiresAt: { lt: now } } });
+  const assistantConversations = await db.assistantConversation.deleteMany({
+    where: { updatedAt: { lt: daysAgo(now, RETENTION.assistantDays) } },
+  });
   const emails = await db.emailMessage.deleteMany({
     where: { status: { in: ["SENT", "PREVIEW", "FAILED"] }, createdAt: { lt: daysAgo(now, RETENTION.emailsDays) } },
   });
@@ -33,5 +38,6 @@ export async function pruneOldRecords(db: PrismaClient, now = new Date()) {
     sessions: sessions.count,
     verifications: verifications.count,
     emails: emails.count,
+    assistantConversations: assistantConversations.count,
   };
 }

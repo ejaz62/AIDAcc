@@ -36,6 +36,8 @@ export const siteContentSchema = z.object({
   location: text(500, "Location"),
   /** Shows the "development preview" strip across the public site. */
   showPreviewNotice: z.boolean().default(true),
+  /** Shows the "Ask AIDA" assistant on the public site. */
+  assistantEnabled: z.boolean().default(true),
 });
 
 export type SiteContent = z.infer<typeof siteContentSchema>;

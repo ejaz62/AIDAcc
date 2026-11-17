@@ -268,3 +268,51 @@ model EmailMessage {
   @@index([registrationId])
   @@map("email_messages")
 }
+
+// ---------------------------------------------------------------------------
+// FAQ knowledge base and AI Assistant
+// ---------------------------------------------------------------------------
+
+/// Questions and answers written by staff. Published entries appear on the
+/// public FAQ and are the AI Assistant's knowledge (with programmes and site details).
+model FaqEntry {
+  id        String        @id @default(cuid())
+  question  String        @db.VarChar(300)
+  answer    String        @db.Text
+  status    ContentStatus @default(DRAFT)
+  sortOrder Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+  @@map("faq_entries")
+}
+
+/// One visitor chat with the AI Assistant. Kept for 30 days for quality review.
+model AssistantConversation {
+  id        String             @id @default(cuid())
+  /// Salted hash of the visitor's IP (rate limiting); never the raw IP.
+  ipHash    String             @db.Char(64)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  messages  AssistantMessage[]
+
+  @@index([createdAt])
+  @@index([ipHash, createdAt])
+  @@map("assistant_conversations")
+}
+
+model AssistantMessage {
+  id             String                @id @default(cuid())
+  conversationId String
+  conversation   AssistantConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  /// "user" or "assistant"
+  role           String                @db.VarChar(10)
+  content        String                @db.Text
+  /// "ai" (Claude), "faq" (offline matching) or "visitor"
+  source         String                @db.VarChar(10)
+  createdAt      DateTime              @default(now())
+
+  @@index([conversationId, createdAt])
+  @@map("assistant_messages")
+}

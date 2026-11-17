@@ -2,4 +2,5 @@
 export const CONTENT_TAGS = {
   programmes: "content:programmes",
   site: "content:site",
+  faq: "content:faq",
 } as const;

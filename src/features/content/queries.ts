@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getDb } from "@/lib/db";
 import { getPublishedProgrammeBySlug, listPublishedProgrammes } from "./programmes";
 import { getPublishedSiteContent } from "./site-content";
+import { listPublishedFaq } from "@/features/faq/faq";
 import { CONTENT_TAGS } from "./tags";
 
 /*
@@ -30,4 +31,11 @@ export async function getSiteDetails() {
   cacheTag(CONTENT_TAGS.site);
   cacheLife("hours");
   return getPublishedSiteContent(getDb());
+}
+
+export async function getPublishedFaq() {
+  "use cache";
+  cacheTag(CONTENT_TAGS.faq);
+  cacheLife("hours");
+  return listPublishedFaq(getDb());
 }

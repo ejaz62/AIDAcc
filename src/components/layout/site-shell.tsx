@@ -1,9 +1,16 @@
 import type { ReactNode } from "react";
+import { AssistantWidget } from "@/features/assistant/assistant-widget";
+import { getSiteDetails } from "@/features/content/queries";
 import { PreviewNotice } from "./preview-notice";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 
-/** Public website chrome: skip link, preview notice, header and footer. */
+async function AssistantIfEnabled() {
+  const { assistantEnabled } = await getSiteDetails();
+  return assistantEnabled ? <AssistantWidget /> : null;
+}
+
+/** Public website chrome: skip link, preview notice, header, footer and the Ask AIDA assistant. */
 export function SiteShell({ children }: { children: ReactNode }) {
   return (
     <>
@@ -19,6 +26,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <SiteFooter />
+      <AssistantIfEnabled />
     </>
   );
 }

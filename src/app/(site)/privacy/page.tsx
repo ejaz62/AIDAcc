@@ -37,6 +37,17 @@ const sections: Array<{ heading: string; body: React.ReactNode }> = [
     ),
   },
   {
+    heading: "Ask AIDA assistant",
+    body: (
+      <p>
+        If you use the Ask AIDA assistant, the questions you type and the answers given are stored for 30 days so staff can
+        improve the information on this website, together with a salted hash of your IP address for abuse prevention. When AI
+        answers are enabled, your questions are sent to our AI provider, Anthropic, to generate a reply. Please do not enter
+        personal information in the chat.
+      </p>
+    ),
+  },
+  {
     heading: "Why we use it",
     body: (
       <p>

@@ -118,6 +118,20 @@ Public pages read published content through cached functions (`src/features/cont
 content type; every admin change calls `updateTag`, so the next page regeneration shows it. Note that the
 **production build needs database access** (`DATABASE_URL`) because public pages are prerendered from published content.
 
+## Ask AIDA assistant and FAQ
+
+- **Ask AIDA** (floating button on every public page, plus homepage and FAQ entry points) answers visitors'
+  questions using **only published content**: programmes, site details and FAQ entries. It never invents fees,
+  dates or programmes, and restates that registering interest is not an application.
+- **AI mode** (`ANTHROPIC_API_KEY` set): Claude (`claude-opus-5-5`, low effort, prompt-cached knowledge,
+  server-side refusal fallback). **FAQ mode** (no key, or if the AI provider is unavailable): answers from matching
+  FAQ entries, otherwise honest guidance. Either way the assistant always works.
+- `POST /api/assistant` accepts same-origin requests only; 20 questions per 10 minutes per visitor (hashed IP);
+  conversations are stored for 30 days (pruned by the daily job) and readable in **Admin → Assistant**.
+- **Admin → FAQ**: create, edit, publish/unpublish and delete questions; published ones appear at `/faq`, on the
+  homepage and in the assistant's knowledge. `npm run db:seed-faq` adds six starter entries (about how the site
+  works) only when the FAQ is empty. **Admin → Site details** can switch the assistant off.
+
 ## Email
 
 - New registrations get a confirmation email restating that registering is **not** an admission application.

@@ -18,6 +18,7 @@ export const site = {
 export const navigation = [
   { label: "About", href: "/about" },
   { label: "Programmes", href: "/programmes" },
+  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -26,6 +27,7 @@ export const footerNavigation = [
   { label: "About", href: "/about" },
   { label: "Programmes", href: "/programmes" },
   { label: "Register interest", href: "/register-interest" },
+  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy notice", href: "/privacy" },
 ] as const;

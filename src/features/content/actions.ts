@@ -90,7 +90,7 @@ export async function removeProgramme(id: string, _prev: FormState, formData: Fo
 export async function saveSiteDetails(_prev: FormState, formData: FormData): Promise<FormState> {
   const actor = await requireAdmin();
   const values = formValues(formData);
-  const parsed = siteContentSchema.safeParse({ ...values, showPreviewNotice: formData.get("showPreviewNotice") === "on" });
+  const parsed = siteContentSchema.safeParse({ ...values, showPreviewNotice: formData.get("showPreviewNotice") === "on", assistantEnabled: formData.get("assistantEnabled") === "on" });
   if (!parsed.success) {
     return { error: "Please correct the highlighted fields.", fieldErrors: fieldErrorsFrom(parsed.error.issues), values };
   }

@@ -102,6 +102,20 @@ export function SiteDetailsForm({ draft }: { draft: SiteContent }) {
         </label>
       </fieldset>
 
+      <fieldset>
+        <legend className="mb-3 text-base font-bold text-ink-950">Ask AIDA assistant</legend>
+        <label className="flex gap-3 text-sm text-ink-700">
+          <input
+            type="checkbox"
+            name="assistantEnabled"
+            defaultChecked={state.values ? state.values.assistantEnabled === "on" : draft.assistantEnabled}
+            key={`assistant-${k}`}
+            className="mt-0.5 size-5 shrink-0 accent-brand-600"
+          />
+          <span>Show the &ldquo;Ask AIDA&rdquo; assistant on the website.</span>
+        </label>
+      </fieldset>
+
       <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row">
         <Button type="submit" name="intent" value="draft" variant="secondary" size="lg" disabled={pending}>
           {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}

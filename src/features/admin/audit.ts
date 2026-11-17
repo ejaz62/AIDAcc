@@ -28,6 +28,11 @@ export const AUDIT_ACTIONS = {
   notificationsChanged: "account.notifications_changed",
   testEmailSent: "email.test_sent",
   emailsRetried: "email.retried",
+  faqCreated: "faq.created",
+  faqUpdated: "faq.updated",
+  faqPublished: "faq.published",
+  faqUnpublished: "faq.unpublished",
+  faqDeleted: "faq.deleted",
 } as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
@@ -57,6 +62,11 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "account.notifications_changed": "Email preference changed",
   "email.test_sent": "Test email sent",
   "email.retried": "Email delivery retried",
+  "faq.created": "FAQ created",
+  "faq.updated": "FAQ edited",
+  "faq.published": "FAQ published",
+  "faq.unpublished": "FAQ unpublished",
+  "faq.deleted": "FAQ deleted",
 };
 
 /**

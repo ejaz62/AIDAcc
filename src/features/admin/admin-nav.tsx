@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { BookOpen, Building2, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
+import { BookOpen, Building2, HelpCircle, Sparkles, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items: Array<{ label: string; href: string; icon: LucideIcon }> = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Registrations", href: "/admin/registrations", icon: ClipboardList },
   { label: "Programmes", href: "/admin/programmes", icon: BookOpen },
+  { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
+  { label: "Assistant", href: "/admin/assistant", icon: Sparkles },
   { label: "Site details", href: "/admin/site", icon: Building2 },
   { label: "Staff", href: "/admin/staff", icon: Users },
   { label: "Emails", href: "/admin/emails", icon: Mail },

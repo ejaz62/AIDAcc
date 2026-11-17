@@ -1,4 +1,6 @@
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Clock, MessageCircle, MonitorSmartphone, Sparkles } from "lucide-react";
+import { OpenAssistantButton } from "@/features/assistant/assistant-widget";
+import { buttonClasses } from "@/components/ui/button";
 import { hero } from "@/content/site";
 import { ButtonLink } from "@/components/ui/button";
 import { Badge, Container } from "@/components/ui/primitives";
@@ -25,10 +27,21 @@ export function Hero() {
               {hero.primaryCta.label}
               <ArrowRight className="size-4" aria-hidden />
             </ButtonLink>
-            <ButtonLink href={hero.secondaryCta.href} variant="outline-inverse" size="lg">
-              {hero.secondaryCta.label}
-            </ButtonLink>
+            <OpenAssistantButton className={buttonClasses({ variant: "outline-inverse", size: "lg" })}>
+              <MessageCircle className="size-4" aria-hidden /> Ask AIDA
+            </OpenAssistantButton>
           </div>
+          <ul className="mt-10 grid gap-4 text-sm text-ink-300 sm:grid-cols-3">
+            {[
+              { icon: MonitorSmartphone, text: "Digital-first academy" },
+              { icon: MessageCircle, text: "Ask AIDA assistant, any time" },
+              { icon: Clock, text: "Register interest in a minute" },
+            ].map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-2">
+                <Icon className="size-4 shrink-0 text-accent-300" aria-hidden /> {text}
+              </li>
+            ))}
+          </ul>
         </div>
         <HeroVisual />
       </Container>
