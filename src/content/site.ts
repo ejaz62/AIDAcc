@@ -47,7 +47,7 @@ export const applyCta = { label: "Apply now", href: "/admission" } as const;
 /** Shown wherever Register Interest appears, so it is never mistaken for an admission application. */
 export const notAnApplication = {
   title: "Registering interest is not an application",
-  body: "Registering interest only lets AIDA contact you with news. It is not an application for admission, does not reserve a place and creates no commitment for you or for AIDA. Formal admission applications will be handled through a separate process once admissions open.",
+  body: "Registering interest only lets AIDA contact you with news. It is not an application for admission, does not reserve a place and creates no commitment for you or for AIDA. To apply for a place, please use the Student Admission Form at /admission.",
 } as const;
 
 export const hero = {

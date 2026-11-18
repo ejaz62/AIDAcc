@@ -9,12 +9,12 @@ import { getPublishedProgrammes } from "@/features/content/queries";
 
 export const metadata: Metadata = {
   title: "Register interest",
-  description: "Register your interest in AIDA to hear when programme information is published.",
+  description: "Not ready to apply yet? Register your interest and AIDA will keep you updated about new batches and news.",
 };
 
 const nextSteps = [
   { icon: MailCheck, text: "Your details are stored securely and used only to contact you about AIDA." },
-  { icon: BellRing, text: "We will email you when programme or admissions information is published." },
+  { icon: BellRing, text: "We will email you about upcoming batches and AIDA news." },
   { icon: Lock, text: "You can ask us to delete your details at any time." },
 ];
 
@@ -24,12 +24,20 @@ export default async function RegisterInterestPage() {
     <>
       <PageHeader
         eyebrow="Register interest"
-        title="Hear from AIDA first"
-        lead="Leave your details and we will let you know when programme and admissions information is published."
+        title="Stay in touch with AIDA"
+        lead="Not ready to apply yet? Leave your details and we will keep you updated about upcoming batches and news."
       />
       <Container className="py-14 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-5 lg:gap-14">
           <div className="lg:col-span-3">
+            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-(--radius-card) border border-cyan-400/30 bg-cyan-400/5 p-5 sm:flex-row sm:items-center">
+              <p className="text-sm text-ink-700">
+                <strong className="text-ink-950">Ready to join a batch?</strong> Apply directly with the Student Admission Form.
+              </p>
+              <Link href="/admission" className="shrink-0 rounded-(--radius-control) bg-brand-600 px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-700">
+                Apply now
+              </Link>
+            </div>
             <NotAnApplication className="mb-8" />
             <div className="rounded-(--radius-card) border border-border bg-surface p-6 shadow-(--shadow-card) sm:p-10">
               <h2 className="text-2xl font-bold text-ink-950">Your details</h2>

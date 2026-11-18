@@ -24,6 +24,10 @@ const OUTDATED_STARTER: Record<string, { old: string; replacement: string }> = {
     replacement:
       "AIDA (Artificial Intelligence Digital Academy) teaches practical AI skills through beginner-friendly, hands-on learning. It offers one programme, the AIDA AI Training Programme: 10 days of live, instructor-led online classes. See /about and /programme.",
   },
+  "Is registering interest the same as applying for admission?": {
+    old: "No. Registering interest only lets AIDA contact you with news. It is not an application for admission, does not reserve a place and creates no commitment for you or for AIDA. Formal admission applications will be handled through a separate process once admissions open.",
+    replacement: "No. Registering interest only lets AIDA contact you with news. It is not an application for admission, does not reserve a place and creates no commitment for you or for AIDA. To apply for a place, please use the Student Admission Form at /admission.",
+  },
   "Where can I find programme details and fees?": {
     old: 'Published programmes are listed at /programmes, each with its overview, who it is for, duration, study format, entry requirements and fees. Details that have not been confirmed yet are shown as "To be confirmed".',
     replacement:
