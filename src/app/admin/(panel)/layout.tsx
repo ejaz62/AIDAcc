@@ -64,20 +64,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-ink-50 lg:flex-row">
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col bg-ink-950 p-5 lg:sticky lg:top-0 lg:flex lg:h-screen">
+      <aside className="hidden w-64 shrink-0 flex-col bg-ink-950 p-5 lg:sticky lg:top-0 lg:flex lg:h-screen lg:overflow-y-auto">
         <Link href="/admin" className="mb-8 rounded-md px-1">
           <Logo inverse />
           <span className="mt-2 block text-xs font-semibold tracking-wider text-accent-300 uppercase">Staff admin</span>
         </Link>
         <AdminSidebarNav />
         <div className="mt-auto">
-          <Link
-            href="/"
-            className="mb-3 flex items-center gap-3 rounded-(--radius-control) border border-white/10 px-3 py-2.5 text-sm font-medium text-ink-200 transition-colors hover:bg-white/5 hover:text-white"
-          >
-            <Globe className="size-4.5" aria-hidden />
-            View website
-          </Link>
           <Suspense fallback={null}>
             <CurrentUser />
           </Suspense>

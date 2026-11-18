@@ -38,6 +38,7 @@ export const footerNavigation = [
   { label: "FAQs", href: "/faq" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy notice", href: "/privacy" },
+  { label: "Staff login", href: "/admin/sign-in" },
 ] as const;
 
 export const registerCta = { label: "Register interest", href: "/register-interest" } as const;

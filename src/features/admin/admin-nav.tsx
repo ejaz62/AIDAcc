@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { BookOpen, Building2, GraduationCap, HelpCircle, Library, Sparkles, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
+import { BookOpen, Building2, Globe, GraduationCap, HelpCircle, Library, Sparkles, ClipboardList, LayoutDashboard, Mail, Menu, ScrollText, UserCog, Users, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items: Array<{ label: string; href: string; icon: LucideIcon }> = [
@@ -63,9 +63,24 @@ function LinkList({ isActive, onNavigate }: { isActive: (href: string) => boolea
   );
 }
 
+/** Leaves admin for the public website (you stay signed in). */
+function ViewWebsiteLink({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link
+      href="/"
+      onClick={onNavigate}
+      className="mb-3 flex items-center gap-3 rounded-(--radius-control) bg-cyan-400 px-3 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300"
+    >
+      <Globe className="size-4.5" aria-hidden />
+      View website
+    </Link>
+  );
+}
+
 export function AdminSidebarNav() {
   return (
     <nav aria-label="Admin" className="flex flex-col gap-1">
+      <ViewWebsiteLink />
       <Links />
     </nav>
   );
@@ -91,6 +106,7 @@ export function AdminMobileNav() {
           aria-label="Admin"
           className="absolute inset-x-0 top-full z-40 flex flex-col gap-1 border-t border-white/10 bg-ink-950 p-3 shadow-xl"
         >
+          <ViewWebsiteLink onNavigate={() => setOpen(false)} />
           <Links onNavigate={() => setOpen(false)} />
           <Link
             href="/admin/account"
