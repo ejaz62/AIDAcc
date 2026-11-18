@@ -97,7 +97,7 @@ describe("questions in English, Roman Urdu and Urdu", () => {
     const roman = ask("class kab hoti hai");
     expect(roman).toContain("Classes raat 9:00 PM");
     expect(roman).toContain("Mazeed maloomat: /programme");
-    expect(ask("refund policy kya hai")).toContain("refund kar di jati hai");
+    expect(ask("refund policy kya hai")).toContain("fee wapas (refund) kar deta hai");
     expect(ask("laptop zaroori hai kya?")).toContain("Laptop zaroori hai");
 
     const urdu = ask("فیس کتنی ہے؟");

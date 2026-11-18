@@ -35,7 +35,7 @@ Q: Are there any discounts?
 A: AIDA's discount policy has not yet been confirmed.
 
 Q: What if I am not satisfied with the course?
-A: If you are not satisfied after the first day's class, your full course fee is refunded without any questions asked.
+A: If you are dissatisfied after completing the first day's class, you receive a 100% refund of the course fee, without any questions. If you change your mind before the first class, your fee is also refunded; only actual bank or transfer charges (if any) may be deducted.
 
 Q: Will I get a certificate?
 A: Yes. Students who successfully complete the course receive an AIDA certificate.
@@ -47,7 +47,7 @@ Q: What will I learn?
 A: Claude and AI tools, AI-powered website development, AI agents and their deployment, AI employees, WhatsApp AI assistants and practical AI automation, including how to publish websites online.
 
 Q: Is the course fee refundable?
-A: Yes. If you are not satisfied after the first day's class, you receive a 100% refund of the course fee, with no questions asked.
+A: Yes. Before the first class: if you change your mind after paying, your fee is refunded; only actual bank or transfer charges incurred in sending the refund may be deducted, and if there are none you receive 100%. After the first day's class: if you are dissatisfied, you receive a 100% refund without any questions. There is no administrative fee or cancellation penalty.
 
 Q: What are the main benefits of the course?
 A: Practical skills you can use straight away: building websites with AI tools, creating AI agents and AI employees, automation workflows, and publishing websites online. You keep your project files and source code. AIDA does not promise employment, earnings or clients.

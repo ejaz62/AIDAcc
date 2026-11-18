@@ -110,7 +110,7 @@ const FACTS = [
   { icon: Wallet, label: "Course fee", value: "PKR 15,000 · SAR 200 · USD 55" },
   { icon: Laptop, label: "You need", value: "A laptop. No coding experience required." },
   { icon: Award, label: "Certificate", value: "AIDA certificate on successful completion" },
-  { icon: CheckCircle2, label: "Refund", value: "100% refund if not satisfied after the first day's class" },
+  { icon: CheckCircle2, label: "Refund", value: "Full refund if you cancel before the first class (only actual bank charges, if any) or are dissatisfied after day one" },
 ];
 
 export function ProgrammeFacts() {

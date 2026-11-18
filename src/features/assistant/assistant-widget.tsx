@@ -266,7 +266,7 @@ export function AssistantWidget() {
                 height={420}
                 unoptimized
                 priority
-                className="h-20 w-auto shrink-0 rounded-xl ring-1 ring-white/20"
+                className="h-24 w-auto shrink-0 rounded-xl ring-1 ring-white/20"
               />
               <div>
                 <p className="font-display font-bold">Ask AIDA</p>

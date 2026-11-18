@@ -28,6 +28,14 @@ const OUTDATED_STARTER: Record<string, { old: string; replacement: string }> = {
     old: "No. Registering interest only lets AIDA contact you with news. It is not an application for admission, does not reserve a place and creates no commitment for you or for AIDA. Formal admission applications will be handled through a separate process once admissions open.",
     replacement: "No. Registering interest only lets AIDA contact you with news. It is not an application for admission, does not reserve a place and creates no commitment for you or for AIDA. To apply for a place, please use the Student Admission Form at /admission.",
   },
+  "What if I am not satisfied with the course?": {
+    old: "If you are not satisfied after the first day's class, your full course fee is refunded without any questions asked.",
+    replacement: "If you are dissatisfied after completing the first day's class, you receive a 100% refund of the course fee, without any questions. If you change your mind before the first class, your fee is also refunded; only actual bank or transfer charges (if any) may be deducted.",
+  },
+  "Is the course fee refundable?": {
+    old: "Yes. If you are not satisfied after the first day's class, you receive a 100% refund of the course fee, with no questions asked.",
+    replacement: "Yes. Before the first class: if you change your mind after paying, your fee is refunded; only actual bank or transfer charges incurred in sending the refund may be deducted, and if there are none you receive 100%. After the first day's class: if you are dissatisfied, you receive a 100% refund without any questions. There is no administrative fee or cancellation penalty.",
+  },
   "Where can I find programme details and fees?": {
     old: 'Published programmes are listed at /programmes, each with its overview, who it is for, duration, study format, entry requirements and fees. Details that have not been confirmed yet are shown as "To be confirmed".',
     replacement:

@@ -1,4 +1,5 @@
 import type { PublicFaq } from "@/features/faq/faq";
+import { situationalParts } from "./situations";
 
 /*
  * FAQ-mode answer engine (no AI provider needed).
@@ -152,7 +153,11 @@ const INTENTS: Intent[] = [
     terms: [
       "refund", "refunds", "refundable", "money back", "moneyback", "fee back", "get my money", "money returned", "wapas", "wapis",
       "wapsi", "wapas milenge", "satisfied", "not satisfied", "dissatisfied", "guarantee",
-      "ریفنڈ", "واپس", "واپسی",
+      "cancel", "cancels", "cancelled", "canceled", "cancelling", "canceling", "cancellation", "change my mind", "changed my mind",
+      "deduct", "deducted", "deduction", "deductions", "administrative", "admin fee", "admin charges", "bank charges",
+      "transfer charges", "penalty", "get back", "kaat", "katauti", "kaatenge", "mutmain na", "mutmain nahi", "pasand na aaye",
+      "pasand nahi aaya",
+      "ریفنڈ", "واپس", "واپسی", "منسوخ", "کٹوتی", "بینک چارجز", "مطمئن نہ", "مطمئن نہیں", "ناخوش",
     ],
     weight: 2,
     specific: true,
@@ -350,6 +355,21 @@ function summaryIn(s: KnowledgeSnippet, lang: ReplyLanguage): string {
   return s.summary;
 }
 
+/** Where the "after the first day's class" part of the refund answer starts, per language. */
+const REFUND_AFTER_MARKERS: Record<ReplyLanguage, string> = {
+  en: "After the first day's class:",
+  roman: "Pehle din ki class ke baad:",
+  urdu: "پہلے دن کی کلاس کے بعد:",
+};
+const AFTER_FIRST_DAY_CUES = /dissatisfied|not satisfied|unsatisfied|after the first|after first|first day|day one|pehle din|mutmain na|پہلے دن|مطمئن نہ/;
+
+/** The refund answer, leading with the case the visitor asked about (both cases stay included). */
+function refundAnswer(text: string, message: string, lang: ReplyLanguage): string {
+  const i = text.indexOf(REFUND_AFTER_MARKERS[lang]);
+  if (i <= 0 || !AFTER_FIRST_DAY_CUES.test(normalise(message))) return text;
+  return `${text.slice(i).trim()} ${text.slice(0, i).trim()}`;
+}
+
 /** Link to a section: its page, plus an anchor when that page shows several sections. */
 function linkFor(s: KnowledgeSnippet, sections: KnowledgeSnippet[]): string {
   if (!s.page) return "";
@@ -368,10 +388,31 @@ export interface ReplyContext {
   previousUserMessages?: string[];
 }
 
-export function offlineReply(message: string, { faq, sections }: AnswerSources, context: ReplyContext = {}): string {
+export function offlineReply(message: string, sources: AnswerSources, context: ReplyContext = {}): string {
   if (isGreeting(message)) return WELCOME;
-
   const lang = conversationLanguage(message, context.previousUserMessages);
+  const situation = situationalParts(message, lang);
+  if (!situation) return answerFromKnowledge(message, sources, lang) ?? unavailableReply(sources.sections, lang);
+
+  // The visitor shared a situation (illness, travel, work, a missed class…): reply with care
+  // first, then the published facts, then any specific question they also asked.
+  const parts = [situation.opener];
+  if (situation.absenceFacts) parts.push(situation.absenceFacts);
+  const top = rankIntents(message).find((r) => sources.sections.some((x) => x.key === r.section));
+  // When a missed class is the subject, "class"/"schedule" words are not a separate question.
+  const isQuestion = /[?؟]/.test(message);
+  const askedSomethingElse =
+    top && top.score >= 1 && !(situation.absenceFacts && ["schedule", "programme"].includes(top.section)) &&
+    (situation.kind !== "achievement" || isQuestion);
+  const answer = askedSomethingElse ? answerFromKnowledge(message, sources, lang) : null;
+  if (answer) parts.push(answer);
+  else if (situation.kind === "frustration") parts.push(situation.fallback);
+  if (situation.closing) parts.push(situation.closing);
+  return parts.join("\n\n");
+}
+
+/** The knowledge-base answer for a question, or null when nothing published matches. */
+function answerFromKnowledge(message: string, { faq, sections }: AnswerSources, lang: ReplyLanguage): string | null {
   const L = LABELS[lang];
   const byKey = new Map(sections.map((s) => [s.key, s]));
   const ranked = rankIntents(message).filter((r) => byKey.has(r.section));
@@ -388,7 +429,8 @@ export function offlineReply(message: string, { faq, sections }: AnswerSources, 
   const specific = ranked.find((r) => SPECIFIC.has(r.section) && r.score >= 1);
   if (specific) {
     const s = byKey.get(specific.section)!;
-    return `${summaryIn(s, lang)}${more([s])}`;
+    const text = s.key === "refund" ? refundAnswer(summaryIn(s, lang), message, lang) : summaryIn(s, lang);
+    return `${text}${more([s])}`;
   }
 
   // 2. Two topics asked together (e.g. fee and duration) get both answers.
@@ -416,5 +458,5 @@ export function offlineReply(message: string, { faq, sections }: AnswerSources, 
     return `${summaryIn(s, lang)}${more([s])}`;
   }
 
-  return unavailableReply(sections, lang);
+  return null;
 }
