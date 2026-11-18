@@ -26,8 +26,11 @@ async function main() {
     transactionOptions: { maxWait: 15_000, timeout: 30_000 },
   });
   try {
-    const row = await db.siteContent.findUnique({ where: { key: SITE_KEY } });
-    if (!row) throw new Error("Site details have not been saved yet (Admin → Site details).");
+    let row = await db.siteContent.findUnique({ where: { key: SITE_KEY } });
+    if (!row) {
+      // Nothing saved yet: store only this setting; every other site detail keeps its default.
+      row = await db.siteContent.create({ data: { key: SITE_KEY, draft: {}, published: {}, publishedAt: new Date() } });
+    }
     const patch = (json: Prisma.JsonValue | null) =>
       ({ ...((json && typeof json === "object" && !Array.isArray(json) ? json : {}) as Record<string, unknown>), showPreviewNotice: show }) as Prisma.InputJsonValue;
     await db.$transaction(async (tx) => {
