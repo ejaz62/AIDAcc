@@ -91,12 +91,15 @@ describe("owner's test questions", () => {
     }
   });
 
-  it("10. instructor: only the knowledge base's founder credentials, not the course description", () => {
+  it("10. instructor: Muhammad Ejaz teaches the classes, with his verified credentials", () => {
     const r = ask("Who is your instructor?");
-    expect(r).toContain("Muhammad Ejaz");
+    expect(r).toContain("founder and instructor is Muhammad Ejaz");
+    expect(r).toContain("teaches the classes");
     expect(r).toContain("10 Anthropic Claude Academy certifications");
     expect(r).not.toContain("AIDA offers one programme");
     expect(r).toContain("/founder");
+    expect(ask("Instructor kaun hai?")).toContain("classes woh khud parhate hain");
+    expect(ask("استاد کون ہیں؟")).toContain("کلاسز وہ خود پڑھاتے ہیں");
   });
 
   it("11. Urdu refund question: Urdu refund answer without the fees", () => {
