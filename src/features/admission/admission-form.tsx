@@ -91,9 +91,11 @@ export function AdmissionForm({ courses = [COURSE_DEFAULT], whatsappHref }: { co
               <MessageCircle className="size-4" aria-hidden /> WhatsApp AIDA Reception
             </a>
           )}
-          <Link href="/" className="inline-flex items-center rounded-(--radius-control) px-4 py-2.5 text-sm font-semibold text-brand-700 hover:text-brand-800">
+          {/* A normal page load, so it always works right after the form is sent. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full page load is intentional here */}
+          <a href="/" className="inline-flex items-center rounded-(--radius-control) px-4 py-2.5 text-sm font-semibold text-brand-700 hover:text-brand-800">
             Return to the homepage
-          </Link>
+          </a>
         </div>
       </div>
     );

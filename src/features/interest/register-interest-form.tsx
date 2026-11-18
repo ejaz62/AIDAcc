@@ -85,9 +85,11 @@ export function RegisterInterestForm({ programmes = [] }: { programmes?: Program
         <CheckCircle2 className="mx-auto size-12 text-emerald-600" aria-hidden />
         <h2 className="mt-4 text-2xl font-bold text-ink-950">Interest registered</h2>
         <p className="mx-auto mt-3 max-w-md leading-relaxed text-ink-700">{state.message}</p>
-        <Link href="/" className="mt-6 inline-block font-semibold text-brand-700 hover:text-brand-800">
+        {/* A normal page load, so it always works right after the form is sent. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full page load is intentional here */}
+          <a href="/" className="mt-6 inline-block font-semibold text-brand-700 hover:text-brand-800">
           Return to the homepage
-        </Link>
+        </a>
       </div>
     );
   }
