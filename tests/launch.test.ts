@@ -20,10 +20,18 @@ describe("indexing switch and site URL", () => {
 
   it("allows indexing (but never /admin or /api) when switched on", () => {
     vi.stubEnv("ALLOW_SEARCH_INDEXING", "true");
-    vi.stubEnv("SITE_URL", "https://aida.example.test");
+    vi.stubEnv("BETTER_AUTH_URL", "https://aida.example.test");
     const r = robots();
     expect(r.rules).toEqual({ userAgent: "*", allow: "/", disallow: ["/admin", "/api"] });
     expect(r.sitemap).toBe("https://aida.example.test/sitemap.xml");
+  });
+
+  it("uses the sign-in address (BETTER_AUTH_URL) before SITE_URL, so email links open where admin works", () => {
+    vi.stubEnv("BETTER_AUTH_URL", "https://learnwithaida.example.test");
+    vi.stubEnv("SITE_URL", "https://old-address.example.test");
+    expect(getSiteUrl().origin).toBe("https://learnwithaida.example.test");
+    vi.stubEnv("BETTER_AUTH_URL", "");
+    expect(getSiteUrl().origin).toBe("https://old-address.example.test");
   });
 
   it("falls back safely for missing or invalid URLs", () => {
