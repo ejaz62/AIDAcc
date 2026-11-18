@@ -5,6 +5,7 @@ import { sslFor } from "@/lib/db-ssl";
 import { PrismaClient } from "@/generated/prisma/client";
 import type { AdminUser } from "@/features/admin/authorize";
 import { admissionSchema } from "@/features/admission/schema";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
 import { ADMISSION_MESSAGES, ADMISSION_POLICY, submitAdmission } from "@/features/admission/service";
 import {
   addAdmissionNote,
@@ -123,7 +124,7 @@ describe.skipIf(!url)("admission applications (PostgreSQL)", () => {
   it("silently drops bots (honeypot and too-fast submissions)", async () => {
     const before = await db.admissionApplication.count({ where: { ipHash } });
     const bot = form();
-    bot.set("company_website", "spam.example");
+    bot.set(HONEYPOT_FIELD, "spam.example");
     expect((await submitAdmission(bot, ctx())).status).toBe("success");
     const fast = form();
     fast.set("startedAt", String(Date.now()));

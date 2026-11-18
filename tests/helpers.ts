@@ -8,7 +8,7 @@ export function makeForm(overrides: Record<string, string | undefined> = {}): Fo
     learnerType: "STUDENT",
     message: "Looking forward to it.",
     consent: "on",
-    company_website: "",
+    aida_hidden_check: "",
     formToken: "11111111-1111-4111-8111-111111111111",
     startedAt: "0",
     ...overrides,

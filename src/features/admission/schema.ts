@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
 
 export const COURSE_DEFAULT = "AIDA AI Training Programme";
 
@@ -102,7 +103,7 @@ export function readAdmissionForm(formData: FormData) {
       message: str("message"),
       consent: str("consent"),
     },
-    honeypot: str("company_website") ?? "",
+    honeypot: str(HONEYPOT_FIELD) ?? "",
     formToken: str("formToken"),
     startedAt: str("startedAt"),
   };

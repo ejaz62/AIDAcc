@@ -1,5 +1,6 @@
 "use client";
 
+import { HONEYPOT_FIELD, HONEYPOT_INPUT_PROPS } from "@/lib/honeypot";
 import Link from "next/link";
 import { useActionState, useEffect, useRef } from "react";
 import { AlertCircle, CheckCircle2, ChevronDown, Loader2, MessageCircle } from "lucide-react";
@@ -229,8 +230,8 @@ export function AdmissionForm({ courses = [COURSE_DEFAULT], whatsappHref }: { co
 
       {/* Honeypot: hidden from people and assistive technology; bots tend to fill it. */}
       <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
-        <label htmlFor="company_website">Leave this field empty</label>
-        <input id="company_website" name="company_website" type="text" tabIndex={-1} autoComplete="off" />
+        <label htmlFor={HONEYPOT_FIELD}>Leave this field empty</label>
+        <input {...HONEYPOT_INPUT_PROPS} />
       </div>
 
       <div>

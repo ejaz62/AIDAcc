@@ -69,7 +69,7 @@ describe("submitInterest", () => {
 
   it("silently discards honeypot submissions", async () => {
     const { repo, registrations, attempts } = createMemoryRepo();
-    const res = await submitInterest(makeForm({ company_website: "http://spam.example" }), repo, ctx());
+    const res = await submitInterest(makeForm({ aida_hidden_check: "http://spam.example" }), repo, ctx());
     expect(res.status).toBe("success");
     expect(registrations.size).toBe(0);
     expect(attempts[0].outcome).toBe("spam");

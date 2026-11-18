@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
 
 /** Describes the registrant — not an AIDA programme or category. */
 export const learnerTypes = [
@@ -76,7 +77,7 @@ export function readInterestForm(formData: FormData) {
       programme: str("programme"),
       consent: str("consent"),
     },
-    honeypot: str("company_website") ?? "",
+    honeypot: str(HONEYPOT_FIELD) ?? "",
     formToken: str("formToken"),
     startedAt: str("startedAt"),
   };

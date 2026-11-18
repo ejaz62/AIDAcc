@@ -6,7 +6,7 @@ export const ADMISSION_POLICY = {
   rateLimitMax: 5,
   rateLimitWindowMs: 15 * 60 * 1000,
   /** Submissions faster than this after the form loaded are treated as bots. */
-  minFillTimeMs: 4000,
+  minFillTimeMs: 2500,
 } as const;
 
 export const ADMISSION_MESSAGES = {
@@ -54,7 +54,8 @@ export async function submitAdmission(formData: FormData, ctx: AdmissionContext)
   const started = Number(startedAt);
   const tooFast = Number.isFinite(started) && started > 0 && ctx.now.getTime() - started < ADMISSION_POLICY.minFillTimeMs;
   if (honeypot.trim() !== "" || tooFast) {
-    await db.submissionAttempt.create({ data: { formToken, ipHash: ctx.ipHash, outcome: "admission_spam" } }).catch(() => {});
+    const outcome = honeypot.trim() !== "" ? "adm_spam_honeypot" : "adm_spam_too_fast";
+    await db.submissionAttempt.create({ data: { formToken, ipHash: ctx.ipHash, outcome } }).catch(() => {});
     return success;
   }
 

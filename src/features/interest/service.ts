@@ -6,7 +6,7 @@ export const POLICY = {
   rateLimitMax: 5,
   rateLimitWindowMs: 15 * 60 * 1000,
   /** Submissions faster than this after the form loaded are treated as bots. */
-  minFillTimeMs: 3000,
+  minFillTimeMs: 2500,
   /** Repeat registrations for the same email within this period are not re-counted. */
   resubmitCooldownMs: 10 * 60 * 1000,
 } as const;
