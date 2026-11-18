@@ -45,3 +45,12 @@ A: In Pakistan, pay via Easypaisa to 0322 7204898 (account holder Muhammad Ejaz)
 
 Q: What will I learn?
 A: Claude and AI tools, AI-powered website development, AI agents and their deployment, AI employees, WhatsApp AI assistants and practical AI automation, including how to publish websites online.
+
+Q: Is the course fee refundable?
+A: Yes. If you are not satisfied after the first day's class, you receive a 100% refund of the course fee, with no questions asked.
+
+Q: What are the main benefits of the course?
+A: Practical skills you can use straight away: building websites with AI tools, creating AI agents and AI employees, automation workflows, and publishing websites online. You keep your project files and source code. AIDA does not promise employment, earnings or clients.
+
+Q: Is there any help after the course is completed?
+A: AIDA encourages students to create their own WhatsApp groups to share knowledge. New students can join groups formed by previous students to consult experienced seniors, or start their own. These groups are run by students, not by AIDA.

@@ -81,6 +81,9 @@ export async function handleAssistantMessage(raw: unknown, deps: AssistantDeps):
   // The API requires the first message to be from the user.
   while (history.length && history[0].role !== "user") history.shift();
 
+  // Earlier visitor messages let FAQ mode keep answering in the conversation's language.
+  const previousUserMessages = conversation.messages.filter((m) => m.role === "user").map((m) => m.content);
+
   let reply: string;
   let source: "ai" | "faq" = "faq";
   if (deps.ai) {
@@ -90,10 +93,10 @@ export async function handleAssistantMessage(raw: unknown, deps: AssistantDeps):
     } catch (err) {
       if (!(err instanceof AssistantUnavailableError)) throw err;
       console.error("[assistant] AI unavailable, using FAQ fallback:", err.message);
-      reply = offlineReply(message, deps.sources);
+      reply = offlineReply(message, deps.sources, { previousUserMessages });
     }
   } else {
-    reply = offlineReply(message, deps.sources);
+    reply = offlineReply(message, deps.sources, { previousUserMessages });
   }
 
   await db.assistantMessage.create({ data: { conversationId: conversation.id, role: "assistant", content: reply, source } });

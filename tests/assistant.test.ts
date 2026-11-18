@@ -21,10 +21,10 @@ const sources = { faq, sections };
 const ask = (q: string) => offlineReply(q, sources);
 
 describe("knowledge files", () => {
-  it("contain all 13 sections with the verified facts", () => {
+  it("contain all 14 sections with the verified facts", () => {
     expect(files.map((f) => f.key)).toEqual([
       "about", "founder", "programme", "schedule", "curriculum", "fees", "admission",
-      "requirements", "support", "certificates", "refund", "faq", "contact",
+      "requirements", "support", "certificates", "refund", "faq", "contact", "benefits",
     ]);
     const all = files.map((f) => `${f.summary}\n${f.body}`).join("\n");
     for (const fact of ["PKR 15,000", "SAR 200", "USD 55", "10 days", "9:00 PM", "0322 7204898", "Muhammad Ejaz", "+92 322 720 4898", "mentorsvalley@gmail.com", "8 days", "Claude Pro"]) {

@@ -66,7 +66,7 @@ function loadSaved(): {
 /** Turns site paths like /fees-admission in a reply into links, without rendering any HTML. */
 function linkify(text: string): ReactNode[] {
   const parts = text.split(
-    /(\/(?:programmes(?:\/[a-z0-9-]+)?|programme|curriculum|fees-admission|admission|founder|register-interest|contact|about|privacy|faq)\b)/g,
+    /(\/(?:programmes(?:\/[a-z0-9-]+)?|programme|curriculum|fees-admission|admission|founder|register-interest|contact|about|privacy|faq)\b(?:#[a-z-]+)?)/g,
   );
   return parts.map((part, i) =>
     i % 2 === 1 ? (
@@ -236,7 +236,7 @@ export function AssistantWidget() {
         )}
       >
         <span className="relative">
-          <Avatar size={52} className="ring-2 ring-white/80" />
+          <Avatar size={60} className="size-12 ring-2 ring-white/80 sm:size-15" />
           <span
             className="absolute right-0 bottom-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400"
             aria-hidden
@@ -266,7 +266,7 @@ export function AssistantWidget() {
                 height={420}
                 unoptimized
                 priority
-                className="h-14 w-auto shrink-0 rounded-lg ring-1 ring-white/20"
+                className="h-20 w-auto shrink-0 rounded-xl ring-1 ring-white/20"
               />
               <div>
                 <p className="font-display font-bold">Ask AIDA</p>
@@ -438,5 +438,40 @@ export function OpenAssistantButton({
     >
       {children}
     </button>
+  );
+}
+
+/** A "type your question" box that opens Ask AIDA with the question already asked. */
+export function AskAidaInline({ placeholder = "Type your question…" }: { placeholder?: string }) {
+  const [text, setText] = useState("");
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        const question = text.trim();
+        window.dispatchEvent(new CustomEvent(OPEN_ASSISTANT_EVENT, { detail: { question: question || undefined } }));
+        setText("");
+      }}
+      className="flex gap-2"
+    >
+      <label htmlFor="ask-aida-inline" className="sr-only">
+        Ask AIDA a question
+      </label>
+      <input
+        id="ask-aida-inline"
+        dir="auto"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        maxLength={1000}
+        placeholder={placeholder}
+        className="min-h-12 flex-1 rounded-(--radius-control) border border-ink-300 bg-surface px-4 text-base text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 focus:outline-none"
+      />
+      <button
+        type="submit"
+        className="flex min-h-12 shrink-0 items-center gap-2 rounded-(--radius-control) bg-brand-600 px-5 font-semibold text-on-brand hover:bg-brand-700"
+      >
+        <Send className="size-4" aria-hidden /> Ask
+      </button>
+    </form>
   );
 }

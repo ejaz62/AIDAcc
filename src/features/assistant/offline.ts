@@ -81,6 +81,8 @@ interface Intent {
   /** Matched as whole words/phrases after normalisation. */
   terms: string[];
   weight?: number;
+  /** Answered alone (refund, support, benefits, founder, certificates). */
+  specific?: boolean;
 }
 
 const INTENTS: Intent[] = [
@@ -99,10 +101,10 @@ const INTENTS: Intent[] = [
     section: "schedule",
     terms: [
       "timing", "timings", "time", "times", "schedule", "batch", "batches", "kab", "kis waqt", "waqt", "date", "dates", "start",
-      "starts", "starting", "shuru", "class time", "classes kab", "how long", "duration", "days", "kitne din", "din", "mudat",
-      "month", "monthly", "recording", "recordings", "recorded", "record", "miss", "missed", "attendance", "haazri", "hazri",
-      "pst", "pkt", "night", "raat",
-      "کب", "وقت", "ٹائم", "بیچ", "دن", "مدت", "ریکارڈنگ", "حاضری", "کلاس کب",
+      "starts", "starting", "shuru", "class time", "class hours", "hours", "hour", "classes kab", "how long", "duration", "days",
+      "kitne din", "din", "mudat", "month", "monthly", "recording", "recordings", "recorded", "record", "miss", "missed",
+      "attendance", "haazri", "hazri", "pst", "pkt", "night", "raat",
+      "کب", "وقت", "ٹائم", "بیچ", "دن", "مدت", "دورانیہ", "ریکارڈنگ", "حاضری", "کلاس کب", "اوقات",
     ],
   },
   {
@@ -127,24 +129,56 @@ const INTENTS: Intent[] = [
     terms: [
       "admission", "admissions", "register", "registration", "join", "joining", "enroll", "enrol", "enrollment", "enrolment",
       "apply", "application", "dakhla", "dakhila", "kaise join", "seat", "coding", "programming", "beginner", "beginners",
-      "experience", "background", "eligibility", "eligible",
-      "داخلہ", "رجسٹر", "کوڈنگ", "تجربہ",
+      "experience", "background", "eligibility", "eligible", "form",
+      "داخلہ", "رجسٹر", "کوڈنگ", "تجربہ", "فارم",
     ],
   },
   {
     section: "programme",
     terms: [
       "course", "courses", "program", "programs", "programme", "programmes", "training", "kitne courses", "online", "live",
-      "instructor", "classes", "class",
-      "کورس", "پروگرام", "ٹریننگ", "کلاس",
+      "classes", "class", "info", "information", "details", "maloomat",
+      "کورس", "پروگرام", "ٹریننگ", "کلاس", "معلومات",
     ],
     weight: 0.6,
   },
-  { section: "certificates", terms: ["certificate", "certificates", "certification", "sertificate", "sanad", "سرٹیفکیٹ", "سند"] },
+  {
+    section: "certificates",
+    terms: ["certificate", "certificates", "certification", "sertificate", "sanad", "سرٹیفکیٹ", "سند"],
+    specific: true,
+  },
   {
     section: "refund",
-    terms: ["refund", "refunds", "money back", "wapas", "wapis", "wapsi", "satisfied", "not satisfied", "guarantee", "ریفنڈ", "واپس"],
-    weight: 1.3,
+    terms: [
+      "refund", "refunds", "refundable", "money back", "moneyback", "fee back", "get my money", "money returned", "wapas", "wapis",
+      "wapsi", "wapas milenge", "satisfied", "not satisfied", "dissatisfied", "guarantee",
+      "ریفنڈ", "واپس", "واپسی",
+    ],
+    weight: 2,
+    specific: true,
+  },
+  {
+    section: "benefits",
+    terms: [
+      "benefit", "benefits", "advantage", "advantages", "gain", "outcome", "outcomes", "worth it", "why should", "why join",
+      "fayda", "faida", "faide", "fayde", "faidah", "fawaid", "kya milega",
+      "فائدہ", "فائدے", "فوائد",
+    ],
+    weight: 1.5,
+    specific: true,
+  },
+  {
+    section: "support",
+    terms: [
+      "after completion", "after completing", "after the course", "after course", "completion", "after finishing",
+      "complete karne ke baad", "course ke baad", "khatam hone ke baad", "baad mein", "seniors", "senior", "previous students",
+      "old students", "former students", "alumni", "consult", "consultation", "mashwara", "mashwarah", "mashura", "rehnumai",
+      "rahnumai", "guidance", "assist", "assistance", "help after", "whatsapp group", "whatsapp groups", "group", "groups",
+      "community", "support", "project files", "source code",
+      "رہنمائی", "مشورہ", "سینئر", "سینئرز", "مکمل ہونے کے بعد", "کورس کے بعد", "گروپ", "مدد",
+    ],
+    weight: 1.2,
+    specific: true,
   },
   {
     section: "contact",
@@ -153,10 +187,21 @@ const INTENTS: Intent[] = [
       "رابطہ", "فون", "نمبر", "ای میل",
     ],
   },
-  { section: "founder", terms: ["founder", "owner", "ceo", "who runs", "who started", "malik", "bani", "بانی", "مالک"], weight: 1.3 },
-  { section: "support", terms: ["support", "help", "madad", "project files", "source code", "مدد"], weight: 0.7 },
+  {
+    section: "founder",
+    terms: [
+      "founder", "owner", "ceo", "who runs", "who started", "malik", "bani", "instructor", "instructors", "teacher", "teachers",
+      "trainer", "tutor", "who teaches", "ustad", "ustaad", "kaun parhata", "kaun parhate", "kaun sikhata",
+      "بانی", "مالک", "استاد", "ٹیچر", "انسٹرکٹر", "ٹرینر",
+    ],
+    weight: 1.5,
+    specific: true,
+  },
   { section: "about", terms: ["what is aida", "aida kya", "about", "academy", "who are you", "tell me about", "تعارف"], weight: 0.8 },
 ];
+
+/** Sections answered on their own: a direct question about them must never get a general answer. */
+const SPECIFIC = new Set(INTENTS.filter((i) => i.specific).map((i) => i.section));
 
 function hasTerm(text: string, term: string): boolean {
   if (/[؀-ۿ]/.test(term)) return text.includes(term);
@@ -226,31 +271,75 @@ export type ReplyLanguage = "en" | "roman" | "urdu";
 
 /** Words that mark a message as Roman Urdu (Urdu written in English letters). */
 const ROMAN_URDU_MARKERS = new Set(
-  "kya kia hai hain hy hn hoti hota hote kab kaise kese kaisay kitni kitna kitne milega milegi milenge milta milti sakta sakte sakti chahiye chahye karna karein krna karen mujhe muje mujhy aap ap apko apka wapas wapis paise pese paisay kaun kon kahan kidhar nahi nhi batain bataen batayen batao bataye ka ki ke ko se mein hum kaun koi jayega jaye lein lena dena".split(" "),
+  "kya kia hai hain hy hn hoti hota hote kab kaise kese kaisay kitni kitna kitne milega milegi milenge milta milti sakta sakte sakti chahiye chahye karna karein krna karen karne mujhe muje mujhy aap ap apko apka wapas wapis paise pese paisay kaun kon kahan kidhar nahi nhi batain bataen batayen batao bataye ka ki ke ko se mein hum koi jayega jaye lein lena dena baad hoon hun raha rahi tha thi gaya jab agar lekin aur bhi wala wali".split(
+    " ",
+  ),
 );
 
-/** The language to answer in: Urdu script, Roman Urdu or English. */
-export function detectLanguage(message: string): ReplyLanguage {
+/** Common English words; used to recognise English when no Urdu signal is present. */
+const ENGLISH_MARKERS = new Set(
+  "what how is are can could would should do does did the a an you your i my me will when where who which why please tell get need about any there have has of for and to with after course this that it am".split(
+    " ",
+  ),
+);
+
+/** The language a single message is written in, or null when it gives no clear signal (e.g. "ok", "laptop?"). */
+export function detectLanguageStrict(message: string): ReplyLanguage | null {
   if (/[؀-ۿ]/.test(message)) return "urdu";
-  const words = normalise(message).split(" ");
-  return words.some((w) => ROMAN_URDU_MARKERS.has(w)) ? "roman" : "en";
+  const words = normalise(message).split(" ").filter(Boolean);
+  if (words.some((w) => ROMAN_URDU_MARKERS.has(w))) return "roman";
+  if (words.some((w) => ENGLISH_MARKERS.has(w))) return "en";
+  return null;
 }
 
-const LABELS: Record<ReplyLanguage, { more: string; and: string; unavailable: string }> = {
+/** The language a single message is written in (English when unclear). */
+export function detectLanguage(message: string): ReplyLanguage {
+  return detectLanguageStrict(message) ?? "en";
+}
+
+/** An explicit request such as "reply in Urdu", "Roman Urdu mein batain" or "انگریزی میں". */
+export function requestedLanguage(message: string): ReplyLanguage | null {
+  const t = normalise(message);
+  if (/\broman\s*urdu\b/.test(t)) return "roman";
+  if (/\b(in|mein|me|main)\s+urdu\b|\burdu\s+(mein|me|main|script|please)\b|اردو میں|اردو زبان/.test(t)) return "urdu";
+  if (/\b(in|mein|me|main)\s+english\b|\benglish\s+(mein|me|main|please)\b|انگریزی میں|انگلش میں/.test(t)) return "en";
+  return null;
+}
+
+/**
+ * Chooses the reply language for a conversation: an explicit request wins; otherwise
+ * the language of the current message; otherwise the language used earlier in the chat.
+ */
+export function conversationLanguage(message: string, previousUserMessages: string[] = []): ReplyLanguage {
+  const explicitNow = requestedLanguage(message);
+  if (explicitNow) return explicitNow;
+  const now = detectLanguageStrict(message);
+  if (now) return now;
+  for (const prev of [...previousUserMessages].reverse()) {
+    const lang = requestedLanguage(prev) ?? detectLanguageStrict(prev);
+    if (lang) return lang;
+  }
+  return "en";
+}
+
+const LABELS: Record<ReplyLanguage, { more: string; and: string; unavailable: string; switched: string }> = {
   en: {
     more: "More details:",
     and: " and ",
     unavailable: "I couldn't find that in AIDA's published information. Please contact AIDA Reception for help.",
+    switched: "Sure — I'll reply in English. How can I help you?",
   },
   roman: {
     more: "Mazeed maloomat:",
     and: " aur ",
     unavailable: "Maazrat, yeh maloomat AIDA ki shaya shuda maloomat mein nahi mili. Madad ke liye AIDA Reception se rabta karein.",
+    switched: "Zaroor — main Roman Urdu mein jawab doongi. Main aap ki kya madad kar sakti hoon?",
   },
   urdu: {
     more: "مزید معلومات:",
     and: " اور ",
     unavailable: "معذرت، یہ معلومات AIDA کی شائع شدہ معلومات میں نہیں ملی۔ مدد کے لیے AIDA ریسپشن سے رابطہ کریں۔",
+    switched: "ضرور — میں اردو میں جواب دوں گی۔ میں آپ کی کیا مدد کر سکتی ہوں؟",
   },
 };
 
@@ -261,46 +350,70 @@ function summaryIn(s: KnowledgeSnippet, lang: ReplyLanguage): string {
   return s.summary;
 }
 
-export function unavailableReply(sections: KnowledgeSnippet[], lang: ReplyLanguage = "en"): string {
-  const contact = sections.find((s) => s.key === "contact");
-  const { unavailable } = LABELS[lang];
-  return contact ? `${unavailable} ${summaryIn(contact, lang)}` : `${unavailable} (/contact)`;
+/** Link to a section: its page, plus an anchor when that page shows several sections. */
+function linkFor(s: KnowledgeSnippet, sections: KnowledgeSnippet[]): string {
+  if (!s.page) return "";
+  const shared = sections.filter((x) => x.page === s.page).length > 1;
+  return shared ? `${s.page}#${s.key}` : s.page;
 }
 
-export function offlineReply(message: string, { faq, sections }: AnswerSources): string {
+export function unavailableReply(sections: KnowledgeSnippet[], lang: ReplyLanguage = "en"): string {
+  const contact = sections.find((s) => s.key === "contact");
+  const { unavailable, more } = LABELS[lang];
+  return contact ? `${unavailable} ${summaryIn(contact, lang)}\n\n${more} /contact` : `${unavailable} (/contact)`;
+}
+
+export interface ReplyContext {
+  /** Earlier messages from the same visitor (oldest first), used to keep the conversation's language. */
+  previousUserMessages?: string[];
+}
+
+export function offlineReply(message: string, { faq, sections }: AnswerSources, context: ReplyContext = {}): string {
   if (isGreeting(message)) return WELCOME;
 
-  const lang = detectLanguage(message);
+  const lang = conversationLanguage(message, context.previousUserMessages);
   const L = LABELS[lang];
   const byKey = new Map(sections.map((s) => [s.key, s]));
   const ranked = rankIntents(message).filter((r) => byKey.has(r.section));
-  const more = (pages: string[]) => {
-    const unique = [...new Set(pages.filter(Boolean))];
-    return unique.length ? `
-
-${L.more} ${unique.join(L.and)}` : "";
+  const more = (items: KnowledgeSnippet[]) => {
+    const links = [...new Set(items.map((s) => linkFor(s, sections)).filter(Boolean))];
+    return links.length ? `\n\n${L.more} ${links.join(L.and)}` : "";
   };
 
-  // A specific FAQ answer beats a general section summary when it matches the whole
-  // question and is about the same topic. FAQ answers are written in English, so for
-  // Urdu / Roman Urdu questions the translated section answer is preferred.
-  const faqHit = lang === "en" || !ranked.length ? matchFaq(message, faq, ranked.length ? 0.6 : 0) : null;
+  // A message that only asks to change language gets a short acknowledgement.
+  if (requestedLanguage(message) && ranked.length === 0) return L.switched;
+
+  // 1. A direct question about refunds, support, benefits, the instructor/founder or
+  //    certificates is answered on its own — never with fees or the course description.
+  const specific = ranked.find((r) => SPECIFIC.has(r.section) && r.score >= 1);
+  if (specific) {
+    const s = byKey.get(specific.section)!;
+    return `${summaryIn(s, lang)}${more([s])}`;
+  }
+
+  // 2. Two topics asked together (e.g. fee and duration) get both answers.
+  const [first, second] = ranked;
+  if (first && second && second.score >= 1 && second.score >= first.score * 0.6 && second.section !== first.section) {
+    const a = byKey.get(first.section)!;
+    const b = byKey.get(second.section)!;
+    return `${summaryIn(a, lang)}\n\n${summaryIn(b, lang)}${more([a, b])}`;
+  }
+
+  // 3. A specific FAQ answer (written in English) when it matches the whole question —
+  //    except for topics whose full section answer must always be given (schedule, contact, course).
+  const fullAnswerTopics = new Set(["schedule", "contact", "programme"]);
+  const faqAllowed = (lang === "en" || !ranked.length) && !(first && fullAnswerTopics.has(first.section));
+  const faqHit = faqAllowed ? matchFaq(message, faq, ranked.length ? 0.6 : 0) : null;
   const faqTopic = faqHit && rankIntents(`${faqHit.question} ${faqHit.answer}`).map((r) => r.section);
   if (faqHit && (!ranked[0] || ranked.some((r) => faqTopic!.includes(r.section)))) {
     const top = ranked[0] && byKey.get(ranked[0].section);
-    return `${faqHit.answer}${more([top?.page ?? ""])}`;
+    return `${faqHit.answer}${top ? more([top]) : ""}`;
   }
 
-  if (ranked.length) {
-    const first = byKey.get(ranked[0].section)!;
-    // Combine a second topic when the visitor clearly asked about two things (e.g. fees and timing).
-    const second = ranked[1] && ranked[1].score >= 1 && ranked[1].score >= ranked[0].score * 0.6 ? byKey.get(ranked[1].section) : null;
-    if (second && second.key !== first.key) {
-      return `${summaryIn(first, lang)}
-
-${summaryIn(second, lang)}${more([first.page, second.page])}`;
-    }
-    return `${summaryIn(first, lang)}${more([first.page])}`;
+  // 4. The best-matching section.
+  if (first) {
+    const s = byKey.get(first.section)!;
+    return `${summaryIn(s, lang)}${more([s])}`;
   }
 
   return unavailableReply(sections, lang);

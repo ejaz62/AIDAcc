@@ -12,7 +12,7 @@ export default function Page() {
     <>
       <PageHeader eyebrow="AI Training Programme" title="AIDA AI Training Programme" lead="A 10-day, live, instructor-led online programme for complete beginners — no coding experience needed." />
       <PageBanner src="/images/learning-workspace.webp" alt="Students learning to build with AI on their laptops (illustrative)" />
-      <KnowledgeSections keys={["programme", "schedule", "support", "certificates"]} />
+      <KnowledgeSections keys={["programme", "benefits", "schedule", "support", "certificates"]} />
       <KnowledgeHelp />
     </>
   );
