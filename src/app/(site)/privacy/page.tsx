@@ -57,12 +57,21 @@ const sections: Array<{ heading: string; body: React.ReactNode }> = [
   {
     heading: "Ask AIDA assistant",
     body: (
-      <p>
-        If you use the Ask AIDA assistant, the questions you type and the answers given are stored for 30 days so staff can
-        improve the information on this website, together with a salted hash of your IP address for abuse prevention. When AI
-        answers are enabled, your questions are sent to our AI provider, Anthropic, to generate a reply. Please do not enter
-        personal information in the chat.
-      </p>
+      <>
+        <p>
+          If you use the Ask AIDA assistant, the questions you type and the answers given are stored for 30 days so staff can
+          improve the information on this website, together with a salted hash of your IP address for abuse prevention. When AI
+          answers are enabled, your questions are sent to our AI provider, Anthropic, to generate a reply. Please do not enter
+          personal information in the chat.
+        </p>
+        <p>
+          If you ask a question by voice, your browser turns your speech into text, which is then handled like a typed
+          question. AIDA never records or stores your voice. Depending on your browser, the audio may be processed by the
+          browser maker&apos;s own speech service (for example, Google in Chrome or Apple in Safari) under its privacy terms.
+          Replies are read aloud by your own device. The microphone is only used while the microphone button shows that it is
+          listening.
+        </p>
+      </>
     ),
   },
   {

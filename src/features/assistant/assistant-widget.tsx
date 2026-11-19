@@ -7,11 +7,21 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { RotateCcw, Send, X } from "lucide-react";
+import { Mic, RotateCcw, Send, Square, Volume2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { WELCOME } from "./offline";
+import {
+  canSpeak,
+  getRecognitionConstructor,
+  speak,
+  stopSpeaking,
+  voiceErrorMessage,
+  type SpeechRecognitionLike,
+  type VoiceLang,
+} from "./voice";
 
 interface Message {
   role: "user" | "assistant";
@@ -31,6 +41,13 @@ const SUGGESTIONS = [
 ];
 
 const GREETING: Message = { role: "assistant", content: WELCOME };
+
+const noSubscribe = () => () => {};
+/** Whether this browser offers speech recognition / speech output (false while server rendering). */
+const useCanListen = () =>
+  useSyncExternalStore(noSubscribe, () => getRecognitionConstructor() !== null, () => false);
+const useCanSpeak = () => useSyncExternalStore(noSubscribe, canSpeak, () => false);
+const URDU_SCRIPT = /[؀-ۿ]/;
 
 function Avatar({ size, className }: { size: number; className?: string }) {
   return (
@@ -103,6 +120,29 @@ export function AssistantWidget() {
   /** Latest `send`, so the open-assistant event can ask a question straight away. */
   const sendRef = useRef<(text: string) => void>(() => {});
 
+  // Voice: speak a question (speech-to-text) and hear the answer (text-to-speech).
+  const canListen = useCanListen();
+  const canTalk = useCanSpeak();
+  const [voiceLang, setVoiceLang] = useState<VoiceLang>("en-US");
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState<number | null>(null);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  /** The next reply is read aloud when the question was spoken. */
+  const speakNextRef = useRef(false);
+  /** Each read-aloud gets a number, so a stopped one can't clear the next one's state. */
+  const speechIdRef = useRef(0);
+  const readAloudRef = useRef<(text: string, index: number) => void>(() => {});
+
+  const stopVoice = useCallback(() => {
+    recognitionRef.current?.abort();
+    recognitionRef.current = null;
+    setListening(false);
+    speechIdRef.current += 1;
+    stopSpeaking();
+    setSpeaking(null);
+  }, []);
+
   useEffect(() => {
     const openHandler = (e: Event) => {
       setOpen(true);
@@ -156,13 +196,14 @@ export function AssistantWidget() {
     inputRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        stopVoice();
         setOpen(false);
         setTimeout(() => launcherRef.current?.focus(), 0);
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, stopVoice]);
 
   const send = useCallback(
     async (text: string) => {
@@ -188,8 +229,18 @@ export function AssistantWidget() {
             data.error || "The assistant is temporarily unavailable.",
           );
         setConversationId(data.conversationId ?? null);
-        setMessages((m) => [...m, { role: "assistant", content: data.reply! }]);
+        const reply = data.reply;
+        let index = 0;
+        setMessages((m) => {
+          index = m.length;
+          return [...m, { role: "assistant", content: reply }];
+        });
+        if (speakNextRef.current) {
+          speakNextRef.current = false;
+          setTimeout(() => readAloudRef.current(reply, index), 0);
+        }
       } catch (err) {
+        speakNextRef.current = false;
         setError(
           err instanceof Error
             ? err.message
@@ -207,7 +258,99 @@ export function AssistantWidget() {
     sendRef.current = (text: string) => void send(text);
   }, [send]);
 
+  // Stop the microphone and any reading when the page changes.
+  useEffect(() => stopVoice, [stopVoice]);
+
+  /** Reads a reply aloud, or says honestly why this device can't. */
+  const readAloud = useCallback(async (text: string, index: number) => {
+    const id = ++speechIdRef.current;
+    setVoiceNote(null);
+    setSpeaking(index);
+    const ok = await speak(text, () => {
+      if (speechIdRef.current === id) setSpeaking(null);
+    });
+    if (!ok && speechIdRef.current === id) {
+      setSpeaking(null);
+      setVoiceNote(
+        URDU_SCRIPT.test(text)
+          ? "This device has no Urdu voice installed, so this reply can't be read aloud. You can read it above."
+          : "This device can't read replies aloud. You can read the reply above.",
+      );
+    }
+  }, []);
+  useEffect(() => {
+    readAloudRef.current = (text, index) => void readAloud(text, index);
+  }, [readAloud]);
+
+  const toggleSpeaking = (text: string, index: number) => {
+    if (speaking === index) {
+      speechIdRef.current += 1;
+      stopSpeaking();
+      setSpeaking(null);
+    } else void readAloud(text, index);
+  };
+
+  const toggleListening = () => {
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    setError(null);
+    setVoiceNote(null);
+    const Recognition = getRecognitionConstructor();
+    if (!Recognition) {
+      setError(
+        "Voice input isn't available in this browser. Please use Chrome, Edge or Safari, or type your question.",
+      );
+      return;
+    }
+    speechIdRef.current += 1;
+    stopSpeaking();
+    setSpeaking(null);
+    const recognition = new Recognition();
+    recognition.lang = voiceLang;
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+    let finalText = "";
+    recognition.onresult = (event) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) finalText += result[0].transcript;
+        else interim += result[0].transcript;
+      }
+      setInput(`${finalText}${interim}`.trim());
+    };
+    recognition.onerror = (event) => {
+      const message = voiceErrorMessage(event.error);
+      if (message) setError(message);
+    };
+    recognition.onend = () => {
+      if (recognitionRef.current !== recognition) return;
+      recognitionRef.current = null;
+      setListening(false);
+      const question = finalText.trim();
+      if (question) {
+        speakNextRef.current = true;
+        sendRef.current(question);
+      }
+    };
+    recognitionRef.current = recognition;
+    setInput("");
+    setListening(true);
+    try {
+      recognition.start();
+    } catch {
+      recognitionRef.current = null;
+      setListening(false);
+      setError(voiceErrorMessage("unknown"));
+    }
+  };
+
   const reset = () => {
+    stopVoice();
+    setVoiceNote(null);
     setMessages([GREETING]);
     setConversationId(null);
     setError(null);
@@ -215,6 +358,7 @@ export function AssistantWidget() {
   };
 
   const close = () => {
+    stopVoice();
     setOpen(false);
     setTimeout(() => launcherRef.current?.focus(), 0);
   };
@@ -327,6 +471,24 @@ export function AssistantWidget() {
                   </span>
                   {m.role === "assistant" ? linkify(m.content) : m.content}
                 </p>
+                {m.role === "assistant" && canTalk && (
+                  <button
+                    type="button"
+                    onClick={() => toggleSpeaking(m.content, i)}
+                    className={cn(
+                      "flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-500 hover:text-brand-700",
+                      speaking === i && "border-brand-300 text-brand-700",
+                    )}
+                    aria-label={speaking === i ? "Stop reading this reply" : "Read this reply aloud"}
+                    title={speaking === i ? "Stop" : "Listen"}
+                  >
+                    {speaking === i ? (
+                      <Square className="size-3.5" aria-hidden />
+                    ) : (
+                      <Volume2 className="size-4" aria-hidden />
+                    )}
+                  </button>
+                )}
               </div>
             ))}
             {pending && (
@@ -380,6 +542,28 @@ export function AssistantWidget() {
                 {error}
               </p>
             )}
+            {voiceNote && !error && (
+              <p
+                role="status"
+                className="mb-2 rounded-lg bg-ink-50 px-3 py-2 text-xs font-medium text-ink-700"
+              >
+                {voiceNote}
+              </p>
+            )}
+            {listening && (
+              <p
+                role="status"
+                className="mb-2 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700"
+              >
+                <span className="relative flex size-2.5" aria-hidden>
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex size-2.5 rounded-full bg-red-600" />
+                </span>
+                {voiceLang === "ur-PK"
+                  ? "سن رہی ہوں… اردو میں بولیں"
+                  : "Listening… speak your question in English"}
+              </p>
+            )}
             <div className="flex items-end gap-2">
               <label htmlFor="aida-assistant-input" className="sr-only">
                 Your question
@@ -397,9 +581,53 @@ export function AssistantWidget() {
                     void send(input);
                   }
                 }}
-                placeholder="Type your question…"
+                placeholder={listening ? "Listening…" : "Type or speak your question…"}
+                dir="auto"
                 className="max-h-32 min-h-11 flex-1 resize-none rounded-(--radius-control) border border-ink-300 px-3.5 py-2.5 text-sm focus:border-brand-500 focus:ring-4 focus:ring-brand-100 focus:outline-none"
               />
+              <div className="flex shrink-0 flex-col items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setVoiceLang((l) => (l === "en-US" ? "ur-PK" : "en-US"))}
+                  disabled={listening}
+                  className="rounded-md border border-border px-1.5 py-0.5 text-[11px] font-semibold text-ink-600 hover:border-brand-300 hover:text-brand-700 disabled:opacity-50"
+                  aria-label={
+                    voiceLang === "en-US"
+                      ? "Speaking language: English. Switch to Urdu"
+                      : "Speaking language: Urdu. Switch to English"
+                  }
+                  title="Language you will speak in"
+                >
+                  {voiceLang === "en-US" ? "EN" : "اردو"}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  disabled={pending}
+                  aria-pressed={listening}
+                  className={cn(
+                    "flex size-11 items-center justify-center rounded-(--radius-control) border disabled:opacity-50",
+                    listening
+                      ? "border-red-600 bg-red-600 text-white hover:bg-red-700"
+                      : "border-brand-300 bg-surface text-brand-700 hover:bg-brand-50",
+                    !canListen && "opacity-60",
+                  )}
+                  aria-label={listening ? "Stop listening" : "Ask by voice"}
+                  title={
+                    canListen
+                      ? listening
+                        ? "Stop listening"
+                        : "Ask by voice"
+                      : "Voice input isn't available in this browser"
+                  }
+                >
+                  {listening ? (
+                    <Square className="size-4" aria-hidden />
+                  ) : (
+                    <Mic className="size-5" aria-hidden />
+                  )}
+                </button>
+              </div>
               <button
                 type="submit"
                 disabled={pending || !input.trim()}
